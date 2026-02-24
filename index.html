@@ -1,560 +1,488 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Meine Geldseite-Covered Call-Rechner</title>
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: Arial, Helvetica, sans-serif; background: #f0f4f8; color: #1e293b; font-size: 14px; min-height: 100vh; }
-    .apikey-banner { background: linear-gradient(135deg,#fefce8,#fef9c3); border-bottom: 3px solid #eab308; padding: 12px 24px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
-    .apikey-banner.active { background: linear-gradient(135deg,#f0fdf4,#dcfce7); border-bottom-color: #16a34a; }
-    .apikey-input { flex:1; min-width:200px; max-width:340px; padding:6px 10px; border:2px solid #ca8a04; border-radius:6px; font-size:13px; font-weight:600; background:white; font-family:monospace; }
-    .apikey-input:focus { outline:none; border-color:#2563eb; }
-    .btn-save { padding:6px 14px; background:#ca8a04; color:white; border:none; border-radius:6px; font-size:12px; font-weight:800; cursor:pointer; }
-    .btn-save:hover { background:#a16207; }
-    .apikey-ok { color:#16a34a; font-weight:800; font-size:13px; }
-    .apikey-hint { font-size:11px; color:#92400e; }
-    .apikey-hint a { color:#1d4ed8; font-weight:700; }
-    .app-header { background:linear-gradient(135deg,#1f4e79 0%,#2e75b6 100%); color:white; padding:18px 28px; box-shadow:0 3px 10px rgba(0,0,0,0.25); display:flex; align-items:center; gap:16px; }
-    .app-header-icon { font-size:32px; }
-    .app-header h1 { font-size:20px; font-weight:800; letter-spacing:-0.3px; }
-    .app-header p { font-size:11px; opacity:0.75; margin-top:2px; }
-    .tab-nav { background:white; border-bottom:3px solid #1f4e79; display:flex; padding:0 24px; overflow-x:auto; box-shadow:0 2px 6px rgba(0,0,0,0.08); position:sticky; top:0; z-index:100; }
-    .tab-btn { padding:14px 22px; border:none; background:none; cursor:pointer; font-size:13px; font-weight:700; color:#64748b; border-bottom:3px solid transparent; margin-bottom:-3px; white-space:nowrap; transition:all 0.2s; }
-    .tab-btn:hover { color:#1f4e79; background:#f8fafc; }
-    .tab-btn.active { color:#1f4e79; border-bottom-color:#1f4e79; background:#eff6ff; }
-    .main { max-width:1400px; margin:0 auto; padding:24px 20px; }
-    .tab-panel { display:none; }
-    .tab-panel.active { display:block; }
-    .card { background:white; border-radius:10px; padding:24px; box-shadow:0 1px 6px rgba(0,0,0,0.08); margin-bottom:22px; }
-    .card-title { font-size:12px; font-weight:800; text-transform:uppercase; letter-spacing:0.07em; color:white; background:#1f4e79; padding:10px 16px; margin:-24px -24px 20px; border-radius:10px 10px 0 0; display:flex; align-items:center; gap:8px; }
-    .section-title { font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:0.06em; color:#1f4e79; background:#dbeafe; padding:7px 12px; border-radius:5px; margin:18px 0 12px; border-left:4px solid #1f4e79; }
-    .form-grid { display:grid; gap:12px; }
-    .fg2 { grid-template-columns:repeat(2,1fr); }
-    .fg4 { grid-template-columns:repeat(4,1fr); }
-    .form-group label { display:block; font-size:10px; font-weight:800; color:#475569; margin-bottom:5px; text-transform:uppercase; letter-spacing:0.05em; }
-    .inp { width:100%; padding:8px 10px; border:1.5px solid #93c5fd; border-radius:5px; background:#eff6ff; color:#1d4ed8; font-size:13px; font-weight:700; transition:all 0.15s; }
-    .inp:focus { outline:none; border-color:#2563eb; box-shadow:0 0 0 3px rgba(37,99,235,0.12); background:#dbeafe; }
-    .inp::placeholder { color:#bfdbfe; font-weight:400; }
-    .fetch-row { display:flex; gap:8px; align-items:stretch; }
-    .fetch-row .inp { flex:1; }
-    .btn-fetch { white-space:nowrap; padding:8px 13px; background:linear-gradient(135deg,#2563eb,#1d4ed8); color:white; border:none; border-radius:5px; font-size:11px; font-weight:800; cursor:pointer; display:flex; align-items:center; gap:5px; transition:all 0.15s; }
-    .btn-fetch:hover { background:linear-gradient(135deg,#1d4ed8,#1e40af); }
-    .btn-fetch.loading { background:#64748b; cursor:wait; }
-    .fetch-status { font-size:11px; font-weight:700; margin-top:5px; min-height:16px; color:#64748b; }
-    .fetch-status.ok { color:#16a34a; }
-    .fetch-status.err { color:#dc2626; }
-    .fetch-status.loading { color:#2563eb; }
-    .delay-note { font-size:10px; color:#94a3b8; margin-top:3px; }
-    .opt-table { width:100%; border-collapse:collapse; font-size:13px; }
-    .opt-table th { background:#1e3a5f; color:white; padding:9px 10px; text-align:left; font-size:10px; font-weight:800; text-transform:uppercase; }
-    .opt-table td { padding:5px 6px; border-bottom:1px solid #f1f5f9; }
-    .opt-table .opt-lbl { font-weight:700; color:#334155; font-size:12px; padding-left:10px; background:#f8fafc; white-space:nowrap; }
-    .res-table { width:100%; border-collapse:collapse; font-size:13px; }
-    .res-table th { background:#1e3a5f; color:white; padding:11px 14px; text-align:center; font-size:11px; font-weight:700; }
-    .res-table td.lbl { padding:8px 14px; font-weight:600; color:#334155; background:#f8fafc; white-space:nowrap; font-size:12px; }
-    .res-table td.cv { padding:8px 10px; text-align:center; font-weight:700; border-bottom:1px solid #f1f5f9; }
-    .res-table tr.sec-hdr td { background:#1e3a5f; color:#93c5fd; font-size:10px; font-weight:800; text-transform:uppercase; padding:6px 14px; letter-spacing:0.05em; }
-    .res-table .best-ann { background:#fef9c3 !important; color:#854d0e !important; font-weight:900 !important; }
-    .itm-tag { color:#dc2626; font-weight:800; font-size:11px; }
-    .otm-tag { color:#16a34a; font-weight:800; font-size:11px; }
-    .mt { width:100%; border-collapse:collapse; font-size:12px; }
-    .mt th { background:#1e3a5f; color:white; padding:8px 8px; text-align:center; font-size:10px; font-weight:800; text-transform:uppercase; white-space:nowrap; position:sticky; top:52px; }
-    .mt td { padding:4px 5px; border-bottom:1px solid #f1f5f9; }
-    .ctd { text-align:center; font-weight:700; color:#334155; }
-    .best-row .ctd { background:#fef9c3; color:#854d0e; }
-    .best-row .ann-col { background:#fef08a; color:#713f12; font-weight:900; }
-    .ann-col { text-align:center; font-weight:800; color:#1f4e79; }
-    .btn { padding:8px 18px; border:none; border-radius:6px; font-size:12px; font-weight:800; cursor:pointer; }
-    .btn-primary { background:#1f4e79; color:white; }
-    .btn-danger { background:#fee2e2; color:#991b1b; }
-    .info-box { background:#eff6ff; border:1px solid #bfdbfe; border-radius:7px; padding:12px 16px; margin-bottom:16px; font-size:13px; color:#1e3a5f; }
-    .note { font-size:12px; color:#64748b; font-style:italic; }
-    .hidden { display:none; }
-    .ex-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:18px; margin-bottom:16px; }
-    .ex-card { border:1px solid #e2e8f0; border-radius:8px; padding:18px; background:#fafafa; }
-    .ex-card h3 { font-size:13px; font-weight:800; color:#1f4e79; margin-bottom:12px; border-bottom:2px solid #bfdbfe; padding-bottom:8px; }
-    .ex-kv { display:flex; justify-content:space-between; padding:5px 0; border-bottom:1px solid #f1f5f9; font-size:13px; }
-    .ex-kv .lbl { color:#64748b; }
-    .ex-kv strong { color:#1e293b; }
-    .ex-kv.highlight { background:#fef9c3; margin:0 -6px; padding:5px 6px; border-radius:4px; }
-    .wt-scenario { border:1px solid #e2e8f0; border-radius:8px; padding:20px; background:#fafafa; }
-    .wt-scenario h3 { font-size:14px; font-weight:800; color:#1f4e79; margin-bottom:14px; }
-    .wt-kv { display:flex; justify-content:space-between; padding:6px 0; border-bottom:1px solid #f1f5f9; font-size:13px; }
-    .wt-kv .lbl { color:#64748b; font-weight:600; }
-    .wt-kv .val { font-weight:700; }
-    .wt-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:16px; margin-top:14px; }
-    @media(max-width:600px) { .fg4{grid-template-columns:1fr 1fr;} .fg2{grid-template-columns:1fr;} }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meine Geldseite – Covered Call Rechner</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Segoe UI',Arial,sans-serif;background:#f0f4f8;color:#1e293b;font-size:15px}
+  /* ---- HEADER ---- */
+  header{background:linear-gradient(135deg,#1f4e79 0%,#2e75b6 100%);color:#fff;padding:18px 28px;display:flex;align-items:center;gap:16px}
+  header h1{font-size:1.4rem;font-weight:700;letter-spacing:0.3px}
+  header span.sub{font-size:0.82rem;opacity:0.82;display:block;margin-top:2px}
+  /* ---- API BANNER ---- */
+  #api-banner{padding:10px 28px;background:#fef9c3;border-bottom:2px solid #fbbf24;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+  #api-banner.ok{background:#dcfce7;border-color:#4ade80}
+  #api-banner label{font-weight:600;font-size:0.88rem;color:#713f12;white-space:nowrap}
+  #api-banner.ok label{color:#166534}
+  #api-key-in{border:1.5px solid #d97706;border-radius:6px;padding:5px 10px;font-size:0.88rem;width:220px;font-family:monospace}
+  #api-banner.ok #api-key-in{border-color:#22c55e}
+  #api-save{background:#1f4e79;color:#fff;border:none;border-radius:6px;padding:5px 14px;cursor:pointer;font-size:0.88rem;font-weight:600}
+  #api-save:hover{background:#2e75b6}
+  #api-status{font-size:0.82rem;color:#92400e;font-style:italic}
+  #api-banner.ok #api-status{color:#166534}
+  /* ---- TABS ---- */
+  nav.tabs{display:flex;background:#1f4e79;gap:2px;padding:0 16px}
+  nav.tabs button{background:transparent;color:rgba(255,255,255,0.72);border:none;padding:12px 22px;cursor:pointer;font-size:0.93rem;font-weight:600;border-bottom:3px solid transparent;transition:all .18s}
+  nav.tabs button:hover{color:#fff;background:rgba(255,255,255,0.1)}
+  nav.tabs button.active{color:#fff;border-bottom-color:#fbbf24;background:rgba(255,255,255,0.12)}
+  /* ---- TABS CONTENT ---- */
+  .tab-pane{display:none;padding:26px 28px}
+  .tab-pane.active{display:block}
+  /* ---- CARDS ---- */
+  .card{background:#fff;border-radius:12px;box-shadow:0 2px 12px rgba(0,0,0,0.07);padding:22px 24px;margin-bottom:20px}
+  .card h2{font-size:1.05rem;font-weight:700;color:#1f4e79;margin-bottom:14px;border-bottom:2px solid #e2e8f0;padding-bottom:8px}
+  /* ---- FORM GRID ---- */
+  .fg{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px 20px;margin-bottom:6px}
+  .fg label{display:block;font-size:0.8rem;font-weight:600;color:#475569;margin-bottom:4px;text-transform:uppercase;letter-spacing:0.4px}
+  .fg input{width:100%;border:1.5px solid #cbd5e1;border-radius:7px;padding:7px 10px;font-size:0.95rem;transition:border-color .15s}
+  .fg input:focus{outline:none;border-color:#2e75b6;box-shadow:0 0 0 3px rgba(46,117,182,0.12)}
+  .fg .fetch-row{display:flex;gap:6px}
+  .fg .fetch-row input{flex:1}
+  .fg .fetch-row button{background:#2e75b6;color:#fff;border:none;border-radius:7px;padding:0 12px;cursor:pointer;font-size:0.82rem;font-weight:700;white-space:nowrap}
+  .fg .fetch-row button:hover{background:#1f4e79}
+  /* ---- PRIMARY BUTTON ---- */
+  .btn-primary{background:linear-gradient(135deg,#1f4e79,#2e75b6);color:#fff;border:none;border-radius:8px;padding:10px 28px;cursor:pointer;font-size:1rem;font-weight:700;margin-top:10px;letter-spacing:0.3px;box-shadow:0 2px 8px rgba(31,78,121,0.25)}
+  .btn-primary:hover{opacity:0.9;transform:translateY(-1px)}
+  /* ---- RESULT BOX ---- */
+  .result-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(175px,1fr));gap:12px;margin-top:14px}
+  .rbox{background:#f8fafc;border-radius:9px;border:1.5px solid #e2e8f0;padding:12px 14px;text-align:center}
+  .rbox .lbl{font-size:0.72rem;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px}
+  .rbox .val{font-size:1.35rem;font-weight:800;color:#1f4e79}
+  .rbox.hi{border-color:#4ade80;background:#f0fdf4}
+  .rbox.hi .val{color:#16a34a}
+  .rbox.ann{border-color:#f59e0b;background:#fffbeb;border-width:2.5px}
+  .rbox.ann .val{color:#b45309;font-size:1.55rem}
+  .rbox.warn{border-color:#f87171;background:#fff5f5}
+  .rbox.warn .val{color:#dc2626}
+  /* ---- MULTI TABLE ---- */
+  .tbl-wrap{overflow-x:auto;border-radius:10px;border:1.5px solid #e2e8f0}
+  table.multi{width:100%;border-collapse:collapse;min-width:900px}
+  table.multi th{background:#1f4e79;color:#fff;font-size:0.78rem;font-weight:700;padding:10px 8px;text-align:center;letter-spacing:0.3px;position:sticky;top:0}
+  table.multi th.ann-hdr{background:#b45309;font-size:0.82rem}
+  table.multi td{padding:7px 7px;border-bottom:1px solid #f1f5f9;font-size:0.88rem;vertical-align:middle}
+  table.multi td input{border:1.5px solid #e2e8f0;border-radius:5px;padding:4px 6px;font-size:0.85rem;width:100%;min-width:70px}
+  table.multi td input:focus{outline:none;border-color:#2e75b6}
+  table.multi tr:hover td{background:#f8fafc}
+  .ctd{text-align:center;font-size:0.88rem}
+  /* ---- ANNUALIZED HIGHLIGHT ---- */
+  .ann-col{background:#fffbeb !important;font-weight:900 !important;color:#b45309 !important;font-size:1rem !important;min-width:90px;border-left:2px solid #f59e0b !important}
+  .best-row .ann-col{background:#fef08a !important;color:#713f12 !important;font-size:1.05rem !important}
+  .best-row td{background:#fefce8}
+  .ann-col-hdr{background:#92400e !important;color:#fff !important;border-left:2px solid #f59e0b}
+  /* ---- BADGE ---- */
+  .badge{display:inline-block;font-size:0.72rem;font-weight:700;padding:2px 8px;border-radius:20px;margin-left:6px}
+  .badge-itm{background:#fee2e2;color:#dc2626}
+  .badge-otm{background:#dcfce7;color:#16a34a}
+  /* ---- INTRO ---- */
+  .intro-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;margin-top:16px}
+  .info-card{border-radius:10px;padding:16px 18px;border-left:4px solid}
+  .info-card.blue{background:#eff6ff;border-color:#2e75b6}
+  .info-card.green{background:#f0fdf4;border-color:#4ade80}
+  .info-card.amber{background:#fffbeb;border-color:#f59e0b}
+  .info-card h3{font-size:0.88rem;font-weight:700;margin-bottom:6px}
+  .info-card p{font-size:0.83rem;color:#475569;line-height:1.6}
+  /* ---- WAS TUN ---- */
+  .scenario-table{width:100%;border-collapse:collapse;margin-top:12px}
+  .scenario-table th{background:#1f4e79;color:#fff;padding:9px 12px;font-size:0.82rem;text-align:left}
+  .scenario-table td{padding:9px 12px;border-bottom:1px solid #e2e8f0;font-size:0.85rem;vertical-align:top}
+  .scenario-table tr:nth-child(even) td{background:#f8fafc}
+  /* ---- FOOTER ---- */
+  footer{text-align:center;padding:16px;font-size:0.78rem;color:#94a3b8;border-top:1px solid #e2e8f0;margin-top:10px}
+  footer a{color:#2e75b6;text-decoration:none}
+  /* ---- TOOLTIP ---- */
+  .tip{font-size:0.78rem;color:#64748b;margin-top:4px;font-style:italic}
+  /* ---- STATUS ---- */
+  .fetch-status{font-size:0.78rem;height:18px;color:#64748b;margin-top:3px}
+  .fetch-status.ok{color:#16a34a}
+  .fetch-status.err{color:#dc2626}
+  /* ---- ADD ROW BTN ---- */
+  #add-row-btn{background:#2e75b6;color:#fff;border:none;border-radius:7px;padding:7px 18px;cursor:pointer;font-size:0.88rem;font-weight:700;margin-bottom:12px}
+  #add-row-btn:hover{background:#1f4e79}
+  #del-row-btn{background:#e2e8f0;color:#475569;border:none;border-radius:7px;padding:7px 14px;cursor:pointer;font-size:0.88rem;font-weight:700;margin-bottom:12px;margin-left:6px}
+  #del-row-btn:hover{background:#f87171;color:#fff}
+  /* ---- ANN LEGEND ---- */
+  .ann-legend{background:#fffbeb;border:1.5px solid #f59e0b;border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:0.85rem;color:#713f12;display:flex;align-items:center;gap:8px}
+  .ann-legend strong{font-size:1.1rem}
+  /* ---- DATE ROW ---- */
+  .date-row{display:flex;align-items:center;gap:16px;margin-bottom:14px;flex-wrap:wrap}
+  .date-row label{font-weight:700;font-size:0.85rem;color:#1f4e79}
+  .date-row input{border:2px solid #2e75b6;border-radius:7px;padding:6px 10px;font-size:0.9rem}
+  @media(max-width:600px){
+    .tab-pane{padding:14px 12px}
+    nav.tabs button{padding:10px 12px;font-size:0.82rem}
+    header h1{font-size:1.1rem}
+  }
+</style>
 </head>
 <body>
 
-<div id="apikey-banner" class="apikey-banner">
-  <span style="font-weight:800;font-size:13px;">🔑 Kurs-API:</span>
-  <input class="apikey-input" id="apikey-input" type="text" placeholder="Finnhub API-Key einfügen …"
-         onkeydown="if(event.key==='Enter') saveApiKey()">
-  <button class="btn-save" onclick="saveApiKey()">Speichern</button>
-  <span id="apikey-status"></span>
-  <span class="apikey-hint">
-    Noch kein Key? <a href="https://finnhub.io/register" target="_blank">Kostenlos registrieren bei finnhub.io</a>
-    &nbsp;(30 Sek., gratis)
-  </span>
-</div>
-
-<header class="app-header">
-  <div class="app-header-icon">📊</div>
+<header>
   <div>
-    <h1>Meine Geldseite-Covered Call-Rechner</h1>
-    <p>Covered Call-Rechner | MeineGeldseite.de&nbsp;&nbsp;·&nbsp;&nbsp;Alle Berechnungen ohne Provisionen</p>
+    <h1>📈 Meine Geldseite – Covered Call Rechner</h1>
+    <span class="sub">Berechne ROO, Annualisierte Rendite &amp; Upside-Potenzial für Covered Calls</span>
   </div>
 </header>
 
-<nav class="tab-nav">
-  <button class="tab-btn active" onclick="showTab('intro',this)">📘 Einführung</button>
-  <button class="tab-btn" onclick="showTab('single',this)">📈 Einzelaktie</button>
-  <button class="tab-btn" onclick="showTab('multi',this)">📊 Mehrere Aktien</button>
-  <button class="tab-btn" onclick="showTab('whatnow',this)">🔄 Was Tun?</button>
+<!-- API BANNER -->
+<div id="api-banner">
+  <label>🔑 Finnhub API-Key:</label>
+  <input type="text" id="api-key-in" placeholder="Ihr API-Key (z.B. abc123xyz)" autocomplete="off">
+  <button id="api-save">Speichern</button>
+  <span id="api-status">Kein Key hinterlegt – Live-Kurse nicht verfügbar</span>
+</div>
+
+<!-- TABS -->
+<nav class="tabs">
+  <button class="active" onclick="showTab('intro',this)">📖 Einführung</button>
+  <button onclick="showTab('single',this)">📊 Einzelaktie</button>
+  <button onclick="showTab('multi',this)">🔢 Mehrere Aktien</button>
+  <button onclick="showTab('action',this)">✅ Was tun?</button>
 </nav>
 
-<div class="main">
-
-<!-- TAB 1: EINFÜHRUNG -->
-<div id="tab-intro" class="tab-panel active">
+<!-- ===== TAB: INTRO ===== -->
+<div id="tab-intro" class="tab-pane active">
   <div class="card">
-    <div class="card-title">📘 Covered Call-Rechner – Einführung & Beispiele</div>
-    <div class="info-box">Willkommen beim <strong>Meine Geldseite-Covered Call-Rechner</strong>. Geben Sie Ihre Aktien- und Optionsdaten ein – alle Kennzahlen werden sofort berechnet. Blau = Eingabe, Grün = Ergebnis.</div>
-
-    <div class="section-title">BEISPIEL 1 – AUS DEM GELD (OTM)</div>
-    <div class="ex-grid">
-      <div class="ex-card">
-        <h3>📥 Eingaben</h3>
-        <div class="ex-kv"><span class="lbl">Aktienname</span><strong>Beispiel AG</strong></div>
-        <div class="ex-kv"><span class="lbl">Aktienkurs</span><strong>$ 65,00</strong></div>
-        <div class="ex-kv"><span class="lbl">Ausübungspreis</span><strong>$ 67,50</strong></div>
-        <div class="ex-kv"><span class="lbl">Laufzeit</span><strong>30 Tage</strong></div>
-        <div class="ex-kv"><span class="lbl">Prämie / Aktie</span><strong>$ 1,50</strong></div>
+    <h2>Was ist ein Covered Call?</h2>
+    <p style="line-height:1.75;color:#334155">
+      Ein <strong>Covered Call</strong> bedeutet: Sie besitzen Aktien und verkaufen gleichzeitig eine Call-Option auf diese Aktien.
+      Dafür erhalten Sie sofort eine <strong>Optionsprämie</strong> – das ist Ihr Einkommen.
+      Im Gegenzug begrenzen Sie Ihren möglichen Kursgewinn auf den Basispreis (Strike) der Option.<br><br>
+      Dieser Rechner hilft Ihnen, die wichtigsten Kennzahlen zu berechnen:
+    </p>
+    <div class="intro-grid" style="margin-top:16px">
+      <div class="info-card blue">
+        <h3>📐 ROO – Return on Option</h3>
+        <p>Der reine Ertrag der Option, bezogen auf Ihre Investition. Berechnung: Optionsgewinn ÷ Kurs × 100</p>
       </div>
-      <div class="ex-card">
-        <h3>📤 Ergebnisse (ohne Zuweisung)</h3>
-        <div class="ex-kv"><span class="lbl">IM / AUS DEM GELD</span><strong style="color:#16a34a;">AUS DEM GELD (OTM)</strong></div>
-        <div class="ex-kv"><span class="lbl">Kosten 100 Aktien</span><strong>$ 6.500,00</strong></div>
-        <div class="ex-kv"><span class="lbl">Einnahmen 1 Kontrakt</span><strong>$ 150,00</strong></div>
-        <div class="ex-kv"><span class="lbl">Aufwärtspotenzial</span><strong>$ 250,00 (3,85 %)</strong></div>
-        <div class="ex-kv"><span class="lbl">ROO</span><strong>2,31 %</strong></div>
-        <div class="ex-kv highlight"><span class="lbl">Ann. Rendite (gesamt)</span><strong>28,08 % p. a.</strong></div>
+      <div class="info-card green">
+        <h3>🔁 Annualisierte Rendite</h3>
+        <p>ROO hochgerechnet auf ein volles Jahr – so vergleichen Sie verschiedene Laufzeiten fair miteinander.</p>
       </div>
-      <div class="ex-card">
-        <h3>📤 Ergebnisse (mit Zuweisung)</h3>
-        <div class="ex-kv"><span class="lbl">Optionsgewinn</span><strong>$ 150,00</strong></div>
-        <div class="ex-kv"><span class="lbl">Aufwärtsgewinn</span><strong>$ 250,00</strong></div>
-        <div class="ex-kv"><span class="lbl">Gesamtgewinn</span><strong>$ 400,00</strong></div>
-        <div class="ex-kv"><span class="lbl">Gesamtrendite</span><strong>6,15 %</strong></div>
-        <div class="ex-kv highlight"><span class="lbl">Ann. Rendite (gesamt)</span><strong>74,87 % p. a.</strong></div>
+      <div class="info-card amber">
+        <h3>📈 Upside-Potenzial</h3>
+        <p>Zusätzlicher Gewinn, wenn der Strike über dem aktuellen Kurs liegt (OTM = Out of the Money).</p>
+      </div>
+      <div class="info-card blue">
+        <h3>🛡️ Downside-Schutz</h3>
+        <p>Um wie viel Prozent darf die Aktie fallen, bevor Sie Verlust machen? (Prämie als Puffer)</p>
       </div>
     </div>
+    <div style="margin-top:18px;padding:14px;background:#f0f9ff;border-radius:8px;border-left:4px solid #0ea5e9">
+      <strong>💡 Tipp: Live-Kurse holen</strong><br>
+      <span style="font-size:0.88rem;color:#475569">Tragen Sie oben Ihren kostenlosen <a href="https://finnhub.io" target="_blank" style="color:#2e75b6">Finnhub.io</a>-API-Key ein.
+      Dann können Sie in der Einzelaktie- und Mehrere-Aktien-Ansicht den aktuellen Kurs automatisch abrufen.</span>
+    </div>
+  </div>
+</div>
 
-    <div class="section-title">BEISPIEL 2 – IM GELD (ITM)</div>
-    <div class="ex-grid">
-      <div class="ex-card">
-        <h3>📥 Eingaben</h3>
-        <div class="ex-kv"><span class="lbl">Aktienname</span><strong>Muster GmbH</strong></div>
-        <div class="ex-kv"><span class="lbl">Aktienkurs</span><strong>$ 80,00</strong></div>
-        <div class="ex-kv"><span class="lbl">Ausübungspreis</span><strong>$ 78,00</strong></div>
-        <div class="ex-kv"><span class="lbl">Laufzeit</span><strong>30 Tage</strong></div>
-        <div class="ex-kv"><span class="lbl">Prämie / Aktie</span><strong>$ 3,80</strong></div>
+<!-- ===== TAB: EINZELAKTIE ===== -->
+<div id="tab-single" class="tab-pane">
+  <div class="card">
+    <h2>📊 Einzelne Aktie analysieren</h2>
+    <div class="fg">
+      <div>
+        <label>Ticker-Symbol</label>
+        <div class="fetch-row">
+          <input type="text" id="s-ticker" placeholder="z.B. AAPL" style="text-transform:uppercase">
+          <button onclick="fetchPrice('s-ticker','s-price','s-fetch-status')">Kurs abrufen</button>
+        </div>
+        <div class="fetch-status" id="s-fetch-status"></div>
       </div>
-      <div class="ex-card">
-        <h3>📤 Ergebnisse</h3>
-        <div class="ex-kv"><span class="lbl">IM / AUS DEM GELD</span><strong style="color:#dc2626;">IM GELD (ITM)</strong></div>
-        <div class="ex-kv"><span class="lbl">Kosten 100 Aktien</span><strong>$ 8.000,00</strong></div>
-        <div class="ex-kv"><span class="lbl">Einnahmen 1 Kontrakt</span><strong>$ 380,00</strong></div>
-        <div class="ex-kv"><span class="lbl">Innerer Wert</span><strong>$ 200,00</strong></div>
-        <div class="ex-kv"><span class="lbl">Tatsächl. Optionsgewinn</span><strong>$ 180,00</strong></div>
-        <div class="ex-kv"><span class="lbl">ROO</span><strong>2,25 %</strong></div>
-        <div class="ex-kv highlight"><span class="lbl">Ann. Rendite</span><strong>27,38 % p. a.</strong></div>
+      <div>
+        <label>Aktueller Kurs ($)</label>
+        <input type="number" id="s-price" placeholder="z.B. 214.50" step="0.01" min="0" oninput="calcSingle()">
+      </div>
+      <div>
+        <label>Strike-Preis ($)</label>
+        <input type="number" id="s-strike" placeholder="z.B. 215.00" step="0.01" min="0" oninput="calcSingle()">
+      </div>
+      <div>
+        <label>Optionsprämie ($/Kontrakt)</label>
+        <input type="number" id="s-prem" placeholder="z.B. 3.20" step="0.01" min="0" oninput="calcSingle()">
+      </div>
+      <div>
+        <label>Heutiges Datum</label>
+        <input type="date" id="s-today" oninput="calcSingle()">
+      </div>
+      <div>
+        <label>Verfallsdatum</label>
+        <input type="date" id="s-expiry" oninput="calcSingle()">
+      </div>
+    </div>
+    <button class="btn-primary" onclick="calcSingle()">🧮 Berechnen</button>
+    <div id="s-result" style="display:none;margin-top:18px">
+      <div id="s-itm-badge" style="margin-bottom:10px;font-size:0.9rem;font-weight:700"></div>
+      <div class="result-grid">
+        <div class="rbox ann" id="r-ann-box">
+          <div class="lbl">🔁 Ann. Rendite (% p.a.)</div>
+          <div class="val" id="r-ann">–</div>
+        </div>
+        <div class="rbox hi">
+          <div class="lbl">📐 ROO (%)</div>
+          <div class="val" id="r-roo">–</div>
+        </div>
+        <div class="rbox">
+          <div class="lbl">💰 Gesamtrendite (%)</div>
+          <div class="val" id="r-tot">–</div>
+        </div>
+        <div class="rbox">
+          <div class="lbl">📈 Upside-Potenzial (%)</div>
+          <div class="val" id="r-up">–</div>
+        </div>
+        <div class="rbox">
+          <div class="lbl">🛡️ Downside-Schutz (%)</div>
+          <div class="val" id="r-dows">–</div>
+        </div>
+        <div class="rbox">
+          <div class="lbl">📅 Tage bis Verfall</div>
+          <div class="val" id="r-days">–</div>
+        </div>
+        <div class="rbox">
+          <div class="lbl">💵 Optionsgewinn ($)</div>
+          <div class="val" id="r-optprofit">–</div>
+        </div>
+        <div class="rbox">
+          <div class="lbl">📦 Kosten 100 Aktien ($)</div>
+          <div class="val" id="r-cost">–</div>
+        </div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- TAB 2: EINZELAKTIE -->
-<div id="tab-single" class="tab-panel">
+<!-- ===== TAB: MEHRERE AKTIEN ===== -->
+<div id="tab-multi" class="tab-pane">
   <div class="card">
-    <div class="card-title">📈 Covered Call-Rechner – Einzelaktie</div>
+    <h2>🔢 Mehrere Aktien vergleichen</h2>
 
-    <div class="section-title">SCHRITT 1 – AKTIENINFORMATIONEN</div>
-    <div class="form-grid fg4" style="margin-bottom:4px;">
-      <div class="form-group"><label>Aktienname</label><input class="inp" id="s-name" type="text" placeholder="z.B. Apple Inc."></div>
-      <div class="form-group">
-        <label>Kürzel (Ticker)</label>
-        <div class="fetch-row">
-          <input class="inp" id="s-ticker" type="text" placeholder="z.B. AAPL" style="text-transform:uppercase;"
-                 onkeydown="if(event.key==='Enter'){event.preventDefault();fetchQuote(this.value,{priceId:'s-price',nameId:'s-name',statusId:'s-fetch-status',btnId:'s-fetch-btn',onDone:updateSingle})}">
-          <button class="btn-fetch" id="s-fetch-btn"
-                  onclick="fetchQuote(el('s-ticker').value,{priceId:'s-price',nameId:'s-name',statusId:'s-fetch-status',btnId:'s-fetch-btn',onDone:updateSingle})">
-            🔍 Kurs
-          </button>
-        </div>
-        <div id="s-fetch-status" class="fetch-status"></div>
-        <div class="delay-note">Quelle: Finnhub · ggf. verzögert</div>
-      </div>
-      <div class="form-group"><label>Aktienkurs ($ / Aktie)</label><input class="inp" id="s-price" type="number" placeholder="0.00" step="0.01" min="0" oninput="updateSingle()"></div>
-      <div class="form-group"><label>Heutiges Datum</label><input class="inp" id="s-today" type="date" oninput="updateSingle()"></div>
+    <!-- DATE ROW -->
+    <div class="date-row">
+      <label>📅 Heutiges Datum:</label>
+      <input type="date" id="m-today" oninput="updateMulti()">
+      <span class="tip">Muss gesetzt sein für die annualisierte Rendite</span>
     </div>
 
-    <div class="section-title">SCHRITT 2 – OPTIONSDATEN (bis zu 4 Optionen vergleichen)</div>
-    <div style="overflow-x:auto;">
-      <table class="opt-table" style="margin-bottom:6px;">
-        <thead><tr>
-          <th style="width:110px;"></th>
-          <th>Kürzel / Symbol</th>
-          <th>Ausübungspreis ($)</th>
-          <th>Verfallsdatum</th>
-          <th>Prämie / Aktie ($)</th>
-        </tr></thead>
-        <tbody id="opt-body"></tbody>
+    <!-- ANN LEGEND -->
+    <div class="ann-legend">
+      <strong>★</strong>
+      Die <strong>Ann. Rendite (% p.a.)</strong> ist die letzte Spalte rechts und wird <span style="background:#fef08a;padding:1px 6px;border-radius:4px;font-weight:700">gelb hervorgehoben</span> für die beste Option.
+      Dafür müssen Kurs, Prämie, Strike UND das Verfallsdatum ausgefüllt sein.
+    </div>
+
+    <button id="add-row-btn" onclick="addRow()">➕ Zeile hinzufügen</button>
+    <button id="del-row-btn" onclick="delRow()">🗑 Letzte Zeile löschen</button>
+
+    <div class="tbl-wrap">
+      <table class="multi">
+        <thead>
+          <tr>
+            <th style="width:90px">Ticker</th>
+            <th style="width:50px">Kurs<br>abrufen</th>
+            <th style="width:80px">Kurs ($)</th>
+            <th style="width:80px">Strike ($)</th>
+            <th style="width:80px">Prämie ($)</th>
+            <th style="width:110px">Verfallsdatum</th>
+            <th>Tage</th>
+            <th>ROO (%)</th>
+            <th>Upside (%)</th>
+            <th>Downside (%)</th>
+            <th>Ges.-Rendite (%)</th>
+            <th class="ann-col-hdr">★ Ann. Rendite<br>(% p.a.)</th>
+          </tr>
+        </thead>
+        <tbody id="multi-tbody">
+          <!-- rows added by JS -->
+        </tbody>
       </table>
     </div>
-
-    <div id="single-results" style="margin-top:18px;">
-      <p class="note" style="text-align:center;padding:24px;">Bitte Aktien- und Optionsdaten eingeben, um die Berechnungen zu sehen.</p>
-    </div>
+    <p class="tip" style="margin-top:8px">★ = Beste annualisierte Rendite wird gelb hervorgehoben</p>
   </div>
 </div>
 
-<!-- TAB 3: MEHRERE AKTIEN -->
-<div id="tab-multi" class="tab-panel">
+<!-- ===== TAB: WAS TUN ===== -->
+<div id="tab-action" class="tab-pane">
   <div class="card">
-    <div class="card-title">📊 Covered Call-Rechner – Mehrere Aktien vergleichen</div>
-    <div class="info-box">Blaue Felder ausfüllen → grüne Felder werden automatisch berechnet. &nbsp;<strong>Beste annualisierte Rendite</strong> wird gelb hervorgehoben.</div>
-
-    <div style="display:flex;gap:14px;align-items:flex-end;margin-bottom:14px;flex-wrap:wrap;">
-      <div class="form-group"><label>Heutiges Datum</label><input class="inp" id="m-today" type="date" oninput="updateMulti()" style="width:160px;"></div>
-      <button class="btn btn-primary" onclick="addMultiRow()">+ Zeile hinzufügen</button>
-      <button class="btn btn-danger" onclick="clearMulti()">Tabelle leeren</button>
+    <h2>✅ Was tun je nach Situation?</h2>
+    <div class="fg" style="margin-bottom:14px">
+      <div>
+        <label>Aktueller Kurs ($)</label>
+        <input type="number" id="wt-price" placeholder="z.B. 214.50" step="0.01" oninput="calcWasTun()">
+      </div>
+      <div>
+        <label>Strike-Preis ($)</label>
+        <input type="number" id="wt-strike" placeholder="z.B. 215.00" step="0.01" oninput="calcWasTun()">
+      </div>
+      <div>
+        <label>Heutiges Datum</label>
+        <input type="date" id="wt-today" oninput="calcWasTun()">
+      </div>
+      <div>
+        <label>Verfallsdatum</label>
+        <input type="date" id="wt-expiry" oninput="calcWasTun()">
+      </div>
     </div>
-
-    <div style="overflow-x:auto;">
-      <table class="mt" id="multi-table">
-        <thead><tr>
-          <th style="min-width:140px;text-align:left;">Aktie / Kürzel</th>
-          <th>Kurs<br>$/Ak.</th>
-          <th>Prämie<br>$/Ak.</th>
-          <th>Ausübungs-<br>preis ($)</th>
-          <th>Verfall</th>
-          <th>Inn. Wert<br>($)</th>
-          <th>Aufwärts<br>($)</th>
-          <th>ROO<br>(%)</th>
-          <th>Aufwärts-<br>rendite (%)</th>
-          <th>Absich.<br>(%)</th>
-          <th>Ann. Rendite<br>(% p.a.)</th>
-          <th style="width:36px;"></th>
-        </tr></thead>
-        <tbody id="multi-tbody"></tbody>
+    <div id="wt-result">
+      <table class="scenario-table">
+        <thead><tr><th>Szenario</th><th>Situation</th><th>Empfehlung</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><strong>📈 Kurs &gt; Strike (ITM)</strong></td>
+            <td>Aktie wurde über den Strike gekauft</td>
+            <td>Option auslaufen lassen → Aktien werden zum Strike verkauft. Neuen Call auf neue Aktien schreiben.</td>
+          </tr>
+          <tr>
+            <td><strong>📉 Kurs &lt; Strike (OTM)</strong></td>
+            <td>Option verfällt wertlos</td>
+            <td>Prämie einstreichen ✅. Neuen Call mit neuem Verfallsdatum schreiben (Roll Out).</td>
+          </tr>
+          <tr>
+            <td><strong>🔄 Kurs fällt stark</strong></td>
+            <td>Aktie unter Einstandskurs</td>
+            <td>Option zurückkaufen (günstig) + neuen Call mit tieferem Strike schreiben. Oder Position halten.</td>
+          </tr>
+          <tr>
+            <td><strong>⏰ Kurz vor Verfall</strong></td>
+            <td>Theta-Zerfall maximal</td>
+            <td>Option jetzt zurückkaufen (fast wertlos) und neuen Call schreiben = "Roll Out"</td>
+          </tr>
+        </tbody>
       </table>
     </div>
-  </div>
-</div>
-
-<!-- TAB 4: WAS TUN -->
-<div id="tab-whatnow" class="tab-panel">
-  <div class="card">
-    <div class="card-title">🔄 Was soll ich jetzt tun? – Entscheidungshilfe zum Verfallstag</div>
-    <div class="info-box">Morgen ist Verfallstag. Du hast eine Aktie gekauft und eine Option dagegen verkauft. Was nun?</div>
-
-    <div class="section-title">SCHRITT 1 – EARNINGS-CHECK</div>
-    <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px;background:#fef9c3;padding:12px 14px;border-radius:8px;flex-wrap:wrap;">
-      <label style="font-weight:700;font-size:13px;">Berichtet das Unternehmen nächsten Monat Quartalszahlen?</label>
-      <select id="wt-earnings" class="inp" style="width:130px;" onchange="updateWhatNow()">
-        <option value="N">Nein (N)</option>
-        <option value="J">Ja  (J)</option>
-      </select>
-      <span id="earnings-warn" class="hidden" style="color:#dc2626;font-weight:800;font-size:13px;">⚠ Bei Earnings: Option NICHT erneuern!</span>
-    </div>
-
-    <div class="section-title">SCHRITT 2 – AKTIENINFORMATIONEN</div>
-    <div class="form-grid fg4" style="margin-bottom:4px;">
-      <div class="form-group"><label>Aktienname</label><input class="inp" id="wt-name" type="text" placeholder="z.B. Fortinet"></div>
-      <div class="form-group">
-        <label>Kürzel</label>
-        <div class="fetch-row">
-          <input class="inp" id="wt-ticker" type="text" placeholder="z.B. FTNT" style="text-transform:uppercase;"
-                 onkeydown="if(event.key==='Enter'){event.preventDefault();fetchQuote(this.value,{priceId:'wt-current',nameId:'wt-name',statusId:'wt-fetch-status',btnId:'wt-fetch-btn',onDone:updateWhatNow})}">
-          <button class="btn-fetch" id="wt-fetch-btn"
-                  onclick="fetchQuote(el('wt-ticker').value,{priceId:'wt-current',nameId:'wt-name',statusId:'wt-fetch-status',btnId:'wt-fetch-btn',onDone:updateWhatNow})">
-            🔍 Kurs
-          </button>
-        </div>
-        <div id="wt-fetch-status" class="fetch-status"></div>
-      </div>
-      <div class="form-group"><label>Anzahl der Aktien</label><input class="inp" id="wt-shares" type="number" placeholder="100" value="100" oninput="updateWhatNow()"></div>
-      <div class="form-group"><label>Heutiges Datum</label><input class="inp" id="wt-today" type="date" oninput="updateWhatNow()"></div>
-      <div class="form-group"><label>Kaufpreis ($ / Aktie)</label><input class="inp" id="wt-purchase" type="number" placeholder="0.00" step="0.01" oninput="updateWhatNow()"></div>
-      <div class="form-group"><label>Aktueller Kurs ($ / Aktie)</label><input class="inp" id="wt-current" type="number" placeholder="0.00" step="0.01" oninput="updateWhatNow()"></div>
-    </div>
-
-    <div class="section-title">SCHRITT 3 – AUSLAUFENDE OPTION</div>
-    <div class="form-grid fg4" style="margin-bottom:4px;">
-      <div class="form-group"><label>Kürzel</label><input class="inp" id="wt-exp-sym" type="text" placeholder=""></div>
-      <div class="form-group"><label>Anzahl Kontrakte</label><input class="inp" id="wt-exp-qty" type="number" placeholder="1" value="1" oninput="updateWhatNow()"></div>
-      <div class="form-group"><label>Ausübungspreis ($)</label><input class="inp" id="wt-exp-strike" type="number" placeholder="0.00" step="0.01" oninput="updateWhatNow()"></div>
-      <div class="form-group"><label>Verfallsdatum</label><input class="inp" id="wt-exp-expiry" type="date" oninput="updateWhatNow()"></div>
-      <div class="form-group"><label>Erhaltene Prämie ($ / Aktie)</label><input class="inp" id="wt-exp-prem" type="number" placeholder="0.00" step="0.01" oninput="updateWhatNow()"></div>
-      <div class="form-group"><label>Akt. Rückkaufpreis ($ / Aktie)</label><input class="inp" id="wt-exp-buyback" type="number" placeholder="0.00" step="0.01" oninput="updateWhatNow()"></div>
-    </div>
-
-    <div class="section-title">SCHRITT 4 – NEUE OPTIONSAUSWAHL</div>
-    <div style="font-weight:700;font-size:11px;color:#475569;text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px;">Roll Out (gleicher Strike, nächster Monat):</div>
-    <div class="form-grid fg4" style="margin-bottom:14px;">
-      <div class="form-group"><label>Kürzel</label><input class="inp" id="wt-ro-sym" type="text" placeholder=""></div>
-      <div class="form-group"><label>Kontrakte</label><input class="inp" id="wt-ro-qty" type="number" placeholder="1" value="1" oninput="updateWhatNow()"></div>
-      <div class="form-group"><label>Ausübungspreis ($)</label><input class="inp" id="wt-ro-strike" type="number" placeholder="0.00" step="0.01" oninput="updateWhatNow()"></div>
-      <div class="form-group"><label>Verfallsdatum</label><input class="inp" id="wt-ro-expiry" type="date" oninput="updateWhatNow()"></div>
-      <div class="form-group"><label>Neue Prämie ($ / Aktie)</label><input class="inp" id="wt-ro-prem" type="number" placeholder="0.00" step="0.01" oninput="updateWhatNow()"></div>
-    </div>
-    <div style="font-weight:700;font-size:11px;color:#475569;text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px;">Roll Up & Out (höherer Strike, nächster Monat):</div>
-    <div class="form-grid fg4" style="margin-bottom:14px;">
-      <div class="form-group"><label>Kürzel</label><input class="inp" id="wt-ru-sym" type="text" placeholder=""></div>
-      <div class="form-group"><label>Kontrakte</label><input class="inp" id="wt-ru-qty" type="number" placeholder="1" value="1" oninput="updateWhatNow()"></div>
-      <div class="form-group"><label>Ausübungspreis ($)</label><input class="inp" id="wt-ru-strike" type="number" placeholder="0.00" step="0.01" oninput="updateWhatNow()"></div>
-      <div class="form-group"><label>Verfallsdatum</label><input class="inp" id="wt-ru-expiry" type="date" oninput="updateWhatNow()"></div>
-      <div class="form-group"><label>Neue Prämie ($ / Aktie)</label><input class="inp" id="wt-ru-prem" type="number" placeholder="0.00" step="0.01" oninput="updateWhatNow()"></div>
-    </div>
-
-    <div id="wt-results" style="margin-top:18px;">
-      <p class="note" style="text-align:center;padding:24px;">Bitte Daten eingeben, um die Szenarien zu sehen.</p>
+    <div style="margin-top:18px;padding:14px;background:#f0fdf4;border-radius:8px;border-left:4px solid #4ade80">
+      <strong>📐 Ellman-Regel:</strong><br>
+      <span style="font-size:0.88rem;color:#166534">ROO zwischen 2–4% pro Monat gilt als ideal. Annualisierte Rendite von 24–48% ist das Ziel für konservative Covered-Call-Strategien nach Alan Ellman.</span>
     </div>
   </div>
 </div>
 
-</div><!-- /main -->
+<footer>
+  <a href="https://www.meine-geldseite.de" target="_blank">www.meine-geldseite.de</a> &nbsp;|&nbsp;
+  Kein Anlageersatz – alle Angaben ohne Gewähr. Kursdaten: <a href="https://finnhub.io" target="_blank">Finnhub.io</a>
+</footer>
 
 <script>
-// ── Helpers ──────────────────────────────────────────────────────
-const el = id => document.getElementById(id);
+// ============================
+// UTILITIES
+// ============================
+const el  = id => document.getElementById(id);
 const num = id => { const v = parseFloat(el(id)?.value); return isNaN(v) ? null : v; };
-const dat = id => { const v = el(id)?.value; return v ? new Date(v + 'T00:00:00') : null; };
-const fc  = n => n.toLocaleString('de-DE', {minimumFractionDigits:2, maximumFractionDigits:2});
-const fp  = n => (n*100).toLocaleString('de-DE', {minimumFractionDigits:2, maximumFractionDigits:2}) + ' %';
-function daysBetween(d1, d2) {
-  if (!d1 || !d2) return null;
-  return Math.round((d1 - d2) / 86400000);
+const dat = id => { const v = el(id)?.value; return v ? new Date(v) : null; };
+const fp  = v  => v !== null && v !== undefined ? (v*100).toFixed(2)+'%' : '–';
+const fd  = v  => v !== null ? '$'+v.toFixed(2) : '–';
+
+function daysBetween(expiry, today) {
+  if (!expiry || !today) return null;
+  const ms = expiry - today;
+  if (ms <= 0) return null;
+  return Math.ceil(ms / 86400000);
 }
 
-// ── API KEY ───────────────────────────────────────────────────────
-function getApiKey() { return localStorage.getItem('mgs_apikey') || ''; }
-function saveApiKey() {
-  const key = el('apikey-input').value.trim();
-  if (!key) return;
-  localStorage.setItem('mgs_apikey', key);
-  showApikeyActive(key);
-}
-function showApikeyActive(key) {
-  const banner = el('apikey-banner');
-  const status = el('apikey-status');
-  if (key) {
-    banner.classList.add('active');
-    status.className = 'apikey-ok';
-    status.textContent = '✓ API aktiv – Kurs-Abruf bereit';
-    el('apikey-input').value = key;
-  } else {
-    banner.classList.remove('active');
-    status.textContent = '';
-  }
-}
-window.addEventListener('load', () => { const k = getApiKey(); if (k) showApikeyActive(k); });
-
-// ── FINNHUB FETCH ─────────────────────────────────────────────────
-async function fetchQuote(ticker, { priceId, nameId, statusId, btnId, onDone }) {
-  const sym    = ticker.trim().toUpperCase();
-  const apiKey = getApiKey();
-  const btn    = btnId    ? el(btnId)    : null;
-  const status = statusId ? el(statusId) : null;
-  if (!sym) return;
-  if (!apiKey) {
-    if (status) { status.className = 'fetch-status err'; status.innerHTML = '⚠ Bitte zuerst den <strong>API-Key oben eingeben</strong>.'; }
-    el('apikey-input').focus();
-    el('apikey-banner').style.outline = '3px solid #dc2626';
-    setTimeout(() => { el('apikey-banner').style.outline = ''; }, 2000);
-    return;
-  }
-  if (btn)    { btn.classList.add('loading'); btn.innerHTML = '⏳'; }
-  if (status) { status.textContent = '⏳ Abrufen …'; status.className = 'fetch-status loading'; }
-  try {
-    const ctrl = new AbortController();
-    const t = setTimeout(() => ctrl.abort(), 8000);
-    const resp = await fetch(`https://finnhub.io/api/v1/quote?symbol=${encodeURIComponent(sym)}&token=${encodeURIComponent(apiKey)}`, { signal: ctrl.signal });
-    clearTimeout(t);
-    if (!resp.ok) throw new Error('HTTP ' + resp.status);
-    const d = await resp.json();
-    const price = d.c;
-    if (!price || price === 0) throw new Error('Kein Kurs für "' + sym + '" – Kürzel korrekt?');
-    let name = sym;
-    try {
-      const r2 = await fetch(`https://finnhub.io/api/v1/stock/profile2?symbol=${encodeURIComponent(sym)}&token=${encodeURIComponent(apiKey)}`);
-      const p = await r2.json();
-      if (p.name) name = p.name;
-    } catch(_) {}
-    if (priceId && el(priceId)) el(priceId).value = price.toFixed(2);
-    if (nameId  && el(nameId))  el(nameId).value  = name;
-    if (status) {
-      status.className = 'fetch-status ok';
-      status.innerHTML = `✓ <strong>${sym}</strong>: $${price.toFixed(2)} <span style="font-weight:400;color:#94a3b8;">${new Date().toLocaleTimeString('de-DE')}</span>`;
-    }
-    if (onDone) onDone(price, name);
-  } catch(e) {
-    if (status) {
-      status.className = 'fetch-status err';
-      status.textContent = '⚠ ' + (e.name === 'AbortError' ? 'Zeitüberschreitung' : e.message);
-    }
-  } finally {
-    if (btn) { btn.classList.remove('loading'); btn.innerHTML = '🔍 Kurs'; }
-  }
-}
-
-// ── TAB NAVIGATION ────────────────────────────────────────────────
-function showTab(tab, btn) {
-  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  el('tab-' + tab).classList.add('active');
-  btn.classList.add('active');
-  if (tab === 'multi' && el('multi-tbody').children.length === 0) initMulti();
-}
-
-// ── CORE CALC ─────────────────────────────────────────────────────
+// ============================
+// CORE CALCULATION
+// ============================
 function calcOpt(S, today, K, expiry, P) {
   if (!S || !K || !P) return null;
-  const daysToExp  = daysBetween(expiry, today);
-  const cost100    = S * 100;
-  const proceeds   = P * 100;
-  const isITM      = K < S;
-  const intrinsic  = Math.max(0, S - K) * 100;
-  const optProfit  = proceeds - intrinsic;
-  const upside     = K > S ? (K - S) * 100 : 0;
-  const upsidePct  = cost100 > 0 ? upside    / cost100 : 0;
-  const dowsPct    = cost100 > 0 ? optProfit / cost100 : 0;
-  const roo        = dowsPct;
-  const totProfit  = optProfit + upside;
-  const totRet     = cost100 > 0 ? totProfit / cost100 : 0;
+  const daysToExp = daysBetween(expiry, today);
+  const cost100   = S * 100;
+  const proceeds  = P * 100;
+  const isITM     = K < S;
+  const intrinsic = Math.max(0, S - K) * 100;
+  const optProfit = proceeds - intrinsic;
+  const upside    = K > S ? (K - S) * 100 : 0;
+  const totProfit = optProfit + upside;
+  const totRet    = cost100 > 0 ? totProfit / cost100 : 0;
+  const roo       = cost100 > 0 ? optProfit / cost100 : 0;
+  const upsidePct = cost100 > 0 ? upside / cost100 : 0;
+  const dowsPct   = cost100 > 0 ? proceeds / cost100 : 0;
   const annualized = (daysToExp && daysToExp > 0) ? totRet * (365 / daysToExp) : null;
-  return { daysToExp, cost100, proceeds, isITM, intrinsic, optProfit, upside, upsidePct, dowsPct, roo, totProfit, totRet, annualized };
+  return { daysToExp, cost100, proceeds, isITM, intrinsic, optProfit, upside,
+           upsidePct, dowsPct, roo, totProfit, totRet, annualized };
 }
 
-// ── TAB 2: EINZELAKTIE ────────────────────────────────────────────
-(function buildOptRows() {
-  const tbody = el('opt-body');
-  [1,2,3,4].forEach(i => {
-    tbody.innerHTML += `<tr>
-      <td class="opt-lbl">Option &nbsp;#${i}</td>
-      <td><input class="inp" id="o${i}-sym" type="text" placeholder="z.B. AAPL MAR 195" style="width:100%;min-width:130px;"></td>
-      <td><input class="inp" id="o${i}-strike" type="number" placeholder="0.00" step="0.01" oninput="updateSingle()" style="width:100%;"></td>
-      <td><input class="inp" id="o${i}-expiry" type="date" oninput="updateSingle()" style="width:100%;"></td>
-      <td><input class="inp" id="o${i}-prem" type="number" placeholder="0.00" step="0.01" oninput="updateSingle()" style="width:100%;"></td>
-    </tr>`;
-  });
-})();
-
-function updateSingle() {
-  const S     = num('s-price');
-  const today = dat('s-today');
-  const opts  = [1,2,3,4].map(i => ({
-    sym:    el(`o${i}-sym`).value || `Option #${i}`,
-    strike: num(`o${i}-strike`),
-    expiry: dat(`o${i}-expiry`),
-    prem:   num(`o${i}-prem`),
-  }));
-  const res = opts.map(o => calcOpt(S, today, o.strike, o.expiry, o.prem));
-  const box = el('single-results');
-  if (!S || !res.some(r => r)) {
-    box.innerHTML = '<p class="note" style="text-align:center;padding:24px;">Bitte Aktien- und Optionsdaten eingeben.</p>';
-    return;
-  }
-  const anns   = res.map(r => r ? r.annualized : null);
-  const maxAnn = Math.max(...anns.filter(a => a !== null));
-  const cellVal = (r, val, extraClass='') => {
-    if (!r) return `<td class="cv ${extraClass}" style="color:#94a3b8;">–</td>`;
-    return `<td class="cv ${extraClass}">${val}</td>`;
-  };
-  const row = (lbl, fn, cls='') =>
-    `<tr><td class="lbl">${lbl}</td>${res.map(r => cellVal(r, r ? fn(r) : '–', cls)).join('')}</tr>`;
-  const sec = lbl =>
-    `<tr class="sec-hdr"><td>${lbl}</td>${[0,1,2,3].map(()=>'<td></td>').join('')}</tr>`;
-  let t = `<div style="overflow-x:auto;"><table class="res-table"><thead><tr>
-    <th>Kennzahl</th>
-    ${opts.map(o => `<th>${o.sym}</th>`).join('')}
-  </tr></thead><tbody>`;
-  t += sec('BASISDATEN');
-  t += row('Tage bis Verfall',              r => r.daysToExp !== null ? r.daysToExp + ' Tage' : '–');
-  t += row('Kosten 100 Aktien ($)',          r => '$ ' + fc(r.cost100));
-  t += row('Einnahmen 1 Kontrakt ($)',       r => '$ ' + fc(r.proceeds));
-  t += sec('POSITIONIERUNG & SCHUTZ');
-  t += `<tr><td class="lbl">IM / AUS DEM GELD</td>${res.map(r => {
-    if (!r) return '<td class="cv" style="color:#94a3b8;">–</td>';
-    return r.isITM ? '<td class="cv itm-tag">IM GELD (ITM)</td>' : '<td class="cv otm-tag">AUS DEM GELD (OTM)</td>';
-  }).join('')}</tr>`;
-  t += row('Innerer Wert gesamt ($)',        r => '$ ' + fc(r.intrinsic));
-  t += row('Aufwärtspotenzial ($)',          r => '$ ' + fc(r.upside));
-  t += row('Aufwärtspotenzial (%)',          r => fp(r.upsidePct));
-  t += row('Absicherungsbetrag ($)',         r => '$ ' + fc(r.optProfit));
-  t += row('Absicherung (%)',               r => fp(r.dowsPct));
-  t += sec('RENDITEN');
-  t += row('Tatsächlicher Optionsgewinn ($)', r => '$ ' + fc(r.optProfit));
-  t += row('Aufwärtsgewinn ($)',             r => '$ ' + fc(r.upside));
-  t += row('Gesamtgewinn ($)',               r => '$ ' + fc(r.totProfit));
-  t += row('ROO (%)',                        r => fp(r.roo));
-  t += row('Gesamtrendite (%)',              r => fp(r.totRet));
-  t += `<tr><td class="lbl">⭐ Ann. Rendite (% p.a.)</td>${res.map(r => {
-    if (!r || r.annualized === null) return '<td class="cv" style="color:#94a3b8;">–</td>';
-    const isBest = r.annualized === maxAnn;
-    return `<td class="cv${isBest ? ' best-ann' : ''}">${fp(r.annualized)}</td>`;
-  }).join('')}</tr>`;
-  t += '</tbody></table></div>';
-  box.innerHTML = t;
+// ============================
+// SINGLE CALC
+// ============================
+function calcSingle() {
+  const S = num('s-price'), K = num('s-strike'), P = num('s-prem');
+  const today = dat('s-today'), expiry = dat('s-expiry');
+  const r = calcOpt(S, today, K, expiry, P);
+  if (!r) { el('s-result').style.display='none'; return; }
+  el('s-result').style.display='block';
+  el('r-ann').textContent      = r.annualized !== null ? fp(r.annualized) : '(Verfallsdatum fehlt)';
+  el('r-roo').textContent      = fp(r.roo);
+  el('r-tot').textContent      = fp(r.totRet);
+  el('r-up').textContent       = fp(r.upsidePct);
+  el('r-dows').textContent     = fp(r.dowsPct);
+  el('r-days').textContent     = r.daysToExp !== null ? r.daysToExp+' Tage' : '–';
+  el('r-optprofit').textContent= fd(r.optProfit);
+  el('r-cost').textContent     = fd(r.cost100);
+  el('s-itm-badge').innerHTML  = r.isITM
+    ? '<span class="badge badge-itm">⚠️ ITM – Im Geld (Kurs über Strike)</span>'
+    : '<span class="badge badge-otm">✅ OTM – Aus dem Geld (Kurs unter Strike)</span>';
 }
 
-// ── TAB 3: MEHRERE AKTIEN ─────────────────────────────────────────
-let mrc = 0;
-function initMulti() {
-  if (!el('m-today').value) el('m-today').value = new Date().toISOString().split('T')[0];
-  for (let i = 0; i < 10; i++) addMultiRow();
+// ============================
+// MULTI TABLE
+// ============================
+let rowCount = 0;
+const DEMO = [
+  {ticker:'AAPL', price:'214.50', strike:'215.00', prem:'3.20', exp: offsetDate(30)},
+  {ticker:'MSFT', price:'415.20', strike:'420.00', prem:'5.80', exp: offsetDate(28)},
+  {ticker:'KO',   price:'63.10',  strike:'64.00',  prem:'0.85', exp: offsetDate(21)},
+  {ticker:'PG',   price:'172.40', strike:'175.00', prem:'2.10', exp: offsetDate(35)},
+];
+
+function offsetDate(days) {
+  const d = new Date();
+  d.setDate(d.getDate() + days);
+  return d.toISOString().slice(0,10);
 }
-function addMultiRow() {
-  const id = ++mrc;
+
+function addRow(data) {
+  rowCount++;
+  const id = rowCount;
+  const tbody = el('multi-tbody');
   const tr = document.createElement('tr');
   tr.id = `mrow-${id}`;
   tr.innerHTML = `
     <td>
-      <div style="display:flex;gap:5px;align-items:center;">
-        <input class="inp" id="m${id}-name" type="text" placeholder="z.B. AAPL"
-               style="min-width:90px;width:100%;text-transform:uppercase;"
-               oninput="updateMulti()"
-               onkeydown="if(event.key==='Enter'){event.preventDefault();fetchQuote(this.value,{priceId:'m${id}-price',statusId:'m${id}-fs',onDone:()=>updateMulti()})}">
-        <button title="Kurs abrufen" style="flex-shrink:0;padding:6px 7px;background:linear-gradient(135deg,#2563eb,#1d4ed8);color:white;border:none;border-radius:5px;cursor:pointer;font-size:11px;font-weight:800;"
-                onclick="fetchQuote(el('m${id}-name').value,{priceId:'m${id}-price',statusId:'m${id}-fs',onDone:()=>updateMulti()})">🔍</button>
+      <div class="fetch-row">
+        <input type="text" id="m${id}-ticker" placeholder="AAPL" style="text-transform:uppercase;width:62px"
+          value="${data?.ticker||''}" oninput="updateMulti()">
+        <button onclick="fetchMulti(${id})" title="Kurs abrufen" style="background:#2e75b6;color:#fff;border:none;border-radius:5px;padding:3px 7px;cursor:pointer;font-size:0.8rem">↓</button>
       </div>
-      <div id="m${id}-fs" class="fetch-status"></div>
     </td>
-    <td><input class="inp" id="m${id}-price"  type="number" placeholder="0.00" step="0.01" oninput="updateMulti()" style="width:80px;"></td>
-    <td><input class="inp" id="m${id}-prem"   type="number" placeholder="0.00" step="0.01" oninput="updateMulti()" style="width:80px;"></td>
-    <td><input class="inp" id="m${id}-strike" type="number" placeholder="0.00" step="0.01" oninput="updateMulti()" style="width:80px;"></td>
-    <td><input class="inp" id="m${id}-expiry" type="date"   oninput="updateMulti()" style="width:140px;"></td>
-    <td class="ctd" id="m${id}-intrinsic">–</td>
-    <td class="ctd" id="m${id}-upside">–</td>
+    <td class="ctd"><span id="m${id}-fstatus" style="font-size:0.75rem;color:#64748b"></span></td>
+    <td><input type="number" id="m${id}-price"  placeholder="0.00" step="0.01" value="${data?.price||''}" oninput="updateMulti()"></td>
+    <td><input type="number" id="m${id}-strike" placeholder="0.00" step="0.01" value="${data?.strike||''}" oninput="updateMulti()"></td>
+    <td><input type="number" id="m${id}-prem"   placeholder="0.00" step="0.01" value="${data?.prem||''}" oninput="updateMulti()"></td>
+    <td><input type="date"   id="m${id}-expiry" value="${data?.exp||''}" oninput="updateMulti()"></td>
+    <td class="ctd" id="m${id}-days">–</td>
     <td class="ctd" id="m${id}-roo">–</td>
-    <td class="ctd" id="m${id}-upret">–</td>
-    <td class="ctd" id="m${id}-prot">–</td>
+    <td class="ctd" id="m${id}-up">–</td>
+    <td class="ctd" id="m${id}-dows">–</td>
+    <td class="ctd" id="m${id}-tot">–</td>
     <td class="ctd ann-col" id="m${id}-ann">–</td>
-    <td><button onclick="delRow(${id})" style="background:#fca5a5;border:none;border-radius:4px;width:28px;height:28px;cursor:pointer;font-size:13px;">✕</button></td>`;
-  el('multi-tbody').appendChild(tr);
+  `;
+  tbody.appendChild(tr);
+  updateMulti();
 }
-function delRow(id) { const r = el(`mrow-${id}`); if(r) r.remove(); updateMulti(); }
-function clearMulti() { el('multi-tbody').innerHTML = ''; mrc = 0; for(let i=0;i<10;i++) addMultiRow(); }
+
+function delRow() {
+  const tbody = el('multi-tbody');
+  if (tbody.children.length > 1) {
+    tbody.removeChild(tbody.lastElementChild);
+    updateMulti();
+  }
+}
 
 function updateMulti() {
   const today = dat('m-today');
   const rows  = Array.from(el('multi-tbody').children);
   const results = [];
+
   rows.forEach(tr => {
     const id  = tr.id.replace('mrow-','');
     const S   = num(`m${id}-price`);
@@ -563,19 +491,28 @@ function updateMulti() {
     const exp = dat(`m${id}-expiry`);
     const r   = calcOpt(S, today, K, exp, P);
     results.push({ id, r });
+
     const set = (field, val) => { const c = el(`m${id}-${field}`); if(c) c.textContent = val; };
+
     if (r) {
-      set('intrinsic', r.intrinsic > 0 ? '$ '+fc(r.intrinsic) : '–');
-      set('upside',    r.upside    > 0 ? '$ '+fc(r.upside)    : '–');
-      set('roo',       fp(r.roo));
-      set('upret',     r.upsidePct > 0 ? fp(r.upsidePct)      : '–');
-      set('prot',      fp(r.dowsPct));
-      set('ann',       r.annualized !== null ? fp(r.annualized) : '–');
+      set('days', r.daysToExp !== null ? r.daysToExp : '–');
+      set('roo',  fp(r.roo));
+      set('up',   fp(r.upsidePct));
+      set('dows', fp(r.dowsPct));
+      set('tot',  fp(r.totRet));
+      // ANNUALIZED
+      if (r.annualized !== null) {
+        set('ann', fp(r.annualized));
+      } else {
+        set('ann', today ? '(Datum fehlt)' : '(Datum setzen)');
+      }
     } else {
-      ['intrinsic','upside','roo','upret','prot','ann'].forEach(f => set(f,'–'));
+      set('days','–'); set('roo','–'); set('up','–'); set('dows','–'); set('tot','–');
+      set('ann', today ? '–' : '(Datum setzen)');
     }
     tr.classList.remove('best-row');
   });
+
   // Highlight best annualized
   const valid = results.filter(x => x.r && x.r.annualized !== null);
   if (valid.length > 0) {
@@ -585,82 +522,99 @@ function updateMulti() {
   }
 }
 
-// ── TAB 4: WAS TUN ────────────────────────────────────────────────
-function updateWhatNow() {
-  const earnings = el('wt-earnings').value;
-  el('earnings-warn').classList.toggle('hidden', earnings !== 'J');
-  const shares   = num('wt-shares')   || 100;
-  const purchase = num('wt-purchase');
-  const current  = num('wt-current');
-  const today    = dat('wt-today');
-  const expStrike  = num('wt-exp-strike');
-  const expExpiry  = dat('wt-exp-expiry');
-  const expPrem    = num('wt-exp-prem');
-  const expBuyback = num('wt-exp-buyback');
-  const expQty     = num('wt-exp-qty') || 1;
-  const roStrike = num('wt-ro-strike');
-  const roExpiry = dat('wt-ro-expiry');
-  const roPrem   = num('wt-ro-prem');
-  const roQty    = num('wt-ro-qty') || 1;
-  const ruStrike = num('wt-ru-strike');
-  const ruExpiry = dat('wt-ru-expiry');
-  const ruPrem   = num('wt-ru-prem');
-  const ruQty    = num('wt-ru-qty') || 1;
-  const box = el('wt-results');
-  if (!current || !purchase) {
-    box.innerHTML = '<p class="note" style="text-align:center;padding:24px;">Bitte Kauf- und aktuellen Kurs eingeben.</p>';
-    return;
-  }
-  const stockGain   = (current - purchase) * shares;
-  const stockGainPct = (current - purchase) / purchase;
-  const expPremTotal = expPrem ? expPrem * 100 * expQty : 0;
-  const buybackTotal = expBuyback ? expBuyback * 100 * expQty : 0;
-  const netPrem      = expPremTotal - buybackTotal;
-  function scenarioCard(title, icon, color, items) {
-    return `<div class="wt-scenario" style="border-color:${color}20;border-left:4px solid ${color};">
-      <h3 style="color:${color};">${icon} ${title}</h3>
-      ${items.map(([l,v,hi]) => `<div class="wt-kv${hi?' highlight':''}"><span class="lbl">${l}</span><span class="val" style="${hi?'color:#854d0e;font-weight:900;':''}">${v}</span></div>`).join('')}
-    </div>`;
-  }
-  let html = '<div class="wt-grid">';
-  html += scenarioCard('Szenario A: Aktie wird abgerufen', '📦', '#1f4e79', [
-    ['Aktiengewinn/-verlust', (stockGain>=0?'+':'')+'$ '+fc(stockGain), false],
-    ['Netto-Prämie (gesamt)', '$ '+fc(netPrem), false],
-    ['Gesamtergebnis', (stockGain+netPrem>=0?'+':'')+'$ '+fc(stockGain+netPrem), true],
-  ]);
-  if (roPrem && roExpiry) {
-    const roDays = daysBetween(roExpiry, today);
-    const roTotal = roPrem * 100 * roQty - buybackTotal;
-    const roAnn = roDays > 0 ? (roPrem / (current||1)) * (365/roDays) : null;
-    html += scenarioCard('Szenario B: Roll Out', '🔄', '#1d4ed8', [
-      ['Rückkauf auslaufende Option', '–$ '+fc(buybackTotal), false],
-      ['Neue Prämie (Roll Out)', '+$ '+fc(roPrem*100*roQty), false],
-      ['Netto aus Roll', (roTotal>=0?'+':'')+'$ '+fc(roTotal), false],
-      ['Ann. Rendite neue Option', roAnn !== null ? fp(roAnn) : '–', true],
-    ]);
-  }
-  if (ruPrem && ruExpiry && ruStrike) {
-    const ruDays = daysBetween(ruExpiry, today);
-    const ruTotal = ruPrem * 100 * ruQty - buybackTotal;
-    const ruAnn = ruDays > 0 ? (ruPrem / (current||1)) * (365/ruDays) : null;
-    html += scenarioCard('Szenario C: Roll Up & Out', '⬆️', '#16a34a', [
-      ['Rückkauf auslaufende Option', '–$ '+fc(buybackTotal), false],
-      ['Neue Prämie (Roll Up & Out)', '+$ '+fc(ruPrem*100*ruQty), false],
-      ['Neuer Ausübungspreis', '$ '+fc(ruStrike), false],
-      ['Netto aus Roll', (ruTotal>=0?'+':'')+'$ '+fc(ruTotal), false],
-      ['Ann. Rendite neue Option', ruAnn !== null ? fp(ruAnn) : '–', true],
-    ]);
-  }
-  html += '</div>';
-  box.innerHTML = html;
+// ============================
+// FETCH LIVE PRICE
+// ============================
+function getApiKey() {
+  return localStorage.getItem('mgs_apikey') || '';
 }
 
-// ── INIT ──────────────────────────────────────────────────────────
-(function init() {
-  const today = new Date().toISOString().split('T')[0];
-  if (el('s-today'))  el('s-today').value  = today;
-  if (el('wt-today')) el('wt-today').value = today;
-})();
+async function fetchPrice(tickerId, priceId, statusId) {
+  const key = getApiKey();
+  if (!key) { el(statusId).textContent='❌ Kein API-Key gespeichert'; el(statusId).className='fetch-status err'; return; }
+  const sym = el(tickerId).value.trim().toUpperCase();
+  if (!sym) { el(statusId).textContent='❌ Bitte Ticker eingeben'; el(statusId).className='fetch-status err'; return; }
+  el(statusId).textContent='⏳ Abruf…'; el(statusId).className='fetch-status';
+  try {
+    const url = `https://finnhub.io/api/v1/quote?symbol=${sym}&token=${key}`;
+    const res = await fetch(url);
+    const d   = await res.json();
+    if (!d.c || d.c === 0) throw new Error('Kurs nicht gefunden');
+    el(priceId).value = d.c.toFixed(2);
+    el(statusId).textContent = `✅ ${sym}: $${d.c.toFixed(2)}`;
+    el(statusId).className = 'fetch-status ok';
+    if (tickerId.startsWith('s-')) calcSingle();
+    else updateMulti();
+  } catch(e) {
+    el(statusId).textContent = '❌ Fehler: '+e.message;
+    el(statusId).className = 'fetch-status err';
+  }
+}
+
+async function fetchMulti(id) {
+  const key = getApiKey();
+  const sym = el(`m${id}-ticker`).value.trim().toUpperCase();
+  const statusEl = el(`m${id}-fstatus`);
+  if (!key) { statusEl.textContent='No Key'; return; }
+  if (!sym) { statusEl.textContent='?'; return; }
+  statusEl.textContent='…';
+  try {
+    const url = `https://finnhub.io/api/v1/quote?symbol=${sym}&token=${key}`;
+    const res = await fetch(url);
+    const d   = await res.json();
+    if (!d.c || d.c === 0) throw new Error('n/a');
+    el(`m${id}-price`).value = d.c.toFixed(2);
+    statusEl.textContent = '✅';
+    updateMulti();
+  } catch(e) {
+    statusEl.textContent = '❌';
+  }
+}
+
+// ============================
+// API KEY UI
+// ============================
+function loadApiKey() {
+  const k = getApiKey();
+  if (k) {
+    el('api-key-in').value = k;
+    el('api-banner').classList.add('ok');
+    el('api-status').textContent = '✅ API-Key aktiv – Live-Kurse verfügbar';
+  }
+}
+
+el('api-save').addEventListener('click', () => {
+  const k = el('api-key-in').value.trim();
+  if (!k) return;
+  localStorage.setItem('mgs_apikey', k);
+  el('api-banner').classList.add('ok');
+  el('api-status').textContent = '✅ API-Key gespeichert – Live-Kurse verfügbar';
+});
+
+// ============================
+// TAB SWITCHING
+// ============================
+function showTab(name, btn) {
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('nav.tabs button').forEach(b => b.classList.remove('active'));
+  el('tab-'+name).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ============================
+// INIT
+// ============================
+window.addEventListener('DOMContentLoaded', () => {
+  loadApiKey();
+  // Set today's date in all date fields
+  const todayStr = new Date().toISOString().slice(0,10);
+  el('s-today').value  = todayStr;
+  el('wt-today').value = todayStr;
+  el('m-today').value  = todayStr;   // <-- CRITICAL: auto-set for multi tab
+
+  // Load demo rows
+  DEMO.forEach(d => addRow(d));
+});
 </script>
 </body>
 </html>
