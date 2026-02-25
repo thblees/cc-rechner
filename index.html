@@ -7,45 +7,52 @@
 <style>
   *{box-sizing:border-box;margin:0;padding:0}
   body{font-family:'Segoe UI',Arial,sans-serif;background:#f0f4f8;color:#1e293b;font-size:15px}
-  /* ---- HEADER ---- */
-  header{background:linear-gradient(135deg,#1f4e79 0%,#2e75b6 100%);color:#fff;padding:18px 28px;display:flex;align-items:center;gap:16px}
-  header h1{font-size:1.4rem;font-weight:700;letter-spacing:0.3px}
+  header{background:linear-gradient(135deg,#1f4e79 0%,#2e75b6 100%);color:#fff;padding:18px 28px}
+  header h1{font-size:1.4rem;font-weight:700}
   header span.sub{font-size:0.82rem;opacity:0.82;display:block;margin-top:2px}
-  /* ---- API BANNER ---- */
-  #api-banner{padding:10px 28px;background:#fef9c3;border-bottom:2px solid #fbbf24;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+
+  /* API BANNER */
+  #api-banner{padding:10px 28px;background:#fef9c3;border-bottom:2px solid #fbbf24;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
   #api-banner.ok{background:#dcfce7;border-color:#4ade80}
-  #api-banner label{font-weight:600;font-size:0.88rem;color:#713f12;white-space:nowrap}
+  #api-banner label{font-weight:700;font-size:0.88rem;color:#713f12;white-space:nowrap}
   #api-banner.ok label{color:#166534}
-  #api-key-in{border:1.5px solid #d97706;border-radius:6px;padding:5px 10px;font-size:0.88rem;width:220px;font-family:monospace}
+  #api-key-in{border:1.5px solid #d97706;border-radius:6px;padding:5px 10px;font-size:0.88rem;width:210px;font-family:monospace}
   #api-banner.ok #api-key-in{border-color:#22c55e}
-  #api-save{background:#1f4e79;color:#fff;border:none;border-radius:6px;padding:5px 14px;cursor:pointer;font-size:0.88rem;font-weight:600}
+  #api-save{background:#1f4e79;color:#fff;border:none;border-radius:6px;padding:5px 14px;cursor:pointer;font-size:0.88rem;font-weight:700}
   #api-save:hover{background:#2e75b6}
   #api-status{font-size:0.82rem;color:#92400e;font-style:italic}
   #api-banner.ok #api-status{color:#166534}
-  /* ---- TABS ---- */
+  .reg-link{font-size:0.82rem;font-weight:700;white-space:nowrap}
+  .reg-link a{color:#1f4e79;text-decoration:underline}
+
+  /* TABS */
   nav.tabs{display:flex;background:#1f4e79;gap:2px;padding:0 16px}
   nav.tabs button{background:transparent;color:rgba(255,255,255,0.72);border:none;padding:12px 22px;cursor:pointer;font-size:0.93rem;font-weight:600;border-bottom:3px solid transparent;transition:all .18s}
   nav.tabs button:hover{color:#fff;background:rgba(255,255,255,0.1)}
   nav.tabs button.active{color:#fff;border-bottom-color:#fbbf24;background:rgba(255,255,255,0.12)}
-  /* ---- TABS CONTENT ---- */
+
   .tab-pane{display:none;padding:26px 28px}
   .tab-pane.active{display:block}
-  /* ---- CARDS ---- */
+
+  /* CARDS */
   .card{background:#fff;border-radius:12px;box-shadow:0 2px 12px rgba(0,0,0,0.07);padding:22px 24px;margin-bottom:20px}
   .card h2{font-size:1.05rem;font-weight:700;color:#1f4e79;margin-bottom:14px;border-bottom:2px solid #e2e8f0;padding-bottom:8px}
-  /* ---- FORM GRID ---- */
+
+  /* FORM GRID */
   .fg{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px 20px;margin-bottom:6px}
   .fg label{display:block;font-size:0.8rem;font-weight:600;color:#475569;margin-bottom:4px;text-transform:uppercase;letter-spacing:0.4px}
   .fg input{width:100%;border:1.5px solid #cbd5e1;border-radius:7px;padding:7px 10px;font-size:0.95rem;transition:border-color .15s}
   .fg input:focus{outline:none;border-color:#2e75b6;box-shadow:0 0 0 3px rgba(46,117,182,0.12)}
   .fg .fetch-row{display:flex;gap:6px}
   .fg .fetch-row input{flex:1}
-  .fg .fetch-row button{background:#2e75b6;color:#fff;border:none;border-radius:7px;padding:0 12px;cursor:pointer;font-size:0.82rem;font-weight:700;white-space:nowrap}
+  .fg .fetch-row button{background:#2e75b6;color:#fff;border:none;border-radius:7px;padding:0 12px;cursor:pointer;font-size:0.82rem;font-weight:700}
   .fg .fetch-row button:hover{background:#1f4e79}
-  /* ---- PRIMARY BUTTON ---- */
-  .btn-primary{background:linear-gradient(135deg,#1f4e79,#2e75b6);color:#fff;border:none;border-radius:8px;padding:10px 28px;cursor:pointer;font-size:1rem;font-weight:700;margin-top:10px;letter-spacing:0.3px;box-shadow:0 2px 8px rgba(31,78,121,0.25)}
+
+  /* BUTTON */
+  .btn-primary{background:linear-gradient(135deg,#1f4e79,#2e75b6);color:#fff;border:none;border-radius:8px;padding:10px 28px;cursor:pointer;font-size:1rem;font-weight:700;margin-top:10px;box-shadow:0 2px 8px rgba(31,78,121,0.25)}
   .btn-primary:hover{opacity:0.9;transform:translateY(-1px)}
-  /* ---- RESULT BOX ---- */
+
+  /* RESULTS */
   .result-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(175px,1fr));gap:12px;margin-top:14px}
   .rbox{background:#f8fafc;border-radius:9px;border:1.5px solid #e2e8f0;padding:12px 14px;text-align:center}
   .rbox .lbl{font-size:0.72rem;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px}
@@ -54,64 +61,77 @@
   .rbox.hi .val{color:#16a34a}
   .rbox.ann{border-color:#f59e0b;background:#fffbeb;border-width:2.5px}
   .rbox.ann .val{color:#b45309;font-size:1.55rem}
-  .rbox.warn{border-color:#f87171;background:#fff5f5}
-  .rbox.warn .val{color:#dc2626}
-  /* ---- MULTI TABLE ---- */
+
+  /* MULTI TABLE */
   .tbl-wrap{overflow-x:auto;border-radius:10px;border:1.5px solid #e2e8f0}
-  table.multi{width:100%;border-collapse:collapse;min-width:900px}
-  table.multi th{background:#1f4e79;color:#fff;font-size:0.78rem;font-weight:700;padding:10px 8px;text-align:center;letter-spacing:0.3px;position:sticky;top:0}
-  table.multi th.ann-hdr{background:#b45309;font-size:0.82rem}
-  table.multi td{padding:7px 7px;border-bottom:1px solid #f1f5f9;font-size:0.88rem;vertical-align:middle}
-  table.multi td input{border:1.5px solid #e2e8f0;border-radius:5px;padding:4px 6px;font-size:0.85rem;width:100%;min-width:70px}
+  table.multi{width:100%;border-collapse:collapse;min-width:980px}
+  table.multi th{background:#1f4e79;color:#fff;font-size:0.76rem;font-weight:700;padding:9px 7px;text-align:center;letter-spacing:0.3px;white-space:nowrap}
+  table.multi th.ann-hdr{background:#92400e !important;font-size:0.8rem;border-left:2px solid #f59e0b}
+  table.multi td{padding:6px 6px;border-bottom:1px solid #f1f5f9;font-size:0.86rem;vertical-align:middle}
+  table.multi td input{border:1.5px solid #e2e8f0;border-radius:5px;padding:4px 6px;font-size:0.84rem;width:100%}
   table.multi td input:focus{outline:none;border-color:#2e75b6}
   table.multi tr:hover td{background:#f8fafc}
-  .ctd{text-align:center;font-size:0.88rem}
-  /* ---- ANNUALIZED HIGHLIGHT ---- */
-  .ann-col{background:#fffbeb !important;font-weight:900 !important;color:#b45309 !important;font-size:1rem !important;min-width:90px;border-left:2px solid #f59e0b !important}
+  .ctd{text-align:center}
+  .lbl-col input{background:#f0f4f8;font-weight:600;color:#334155;font-size:0.82rem}
+
+  /* TICKER+FETCH */
+  .tk-cell{display:flex;gap:4px;align-items:center}
+  .tk-cell input{width:64px;text-transform:uppercase}
+  .tk-cell button{background:#2e75b6;color:#fff;border:none;border-radius:5px;padding:4px 8px;cursor:pointer;font-size:0.78rem;font-weight:700}
+  .tk-cell button:hover{background:#1f4e79}
+
+  /* ANN COLUMN */
+  .ann-col{background:#fffbeb !important;font-weight:900 !important;color:#b45309 !important;font-size:0.98rem !important;border-left:2px solid #f59e0b !important;min-width:85px}
   .best-row .ann-col{background:#fef08a !important;color:#713f12 !important;font-size:1.05rem !important}
-  .best-row td{background:#fefce8}
-  .ann-col-hdr{background:#92400e !important;color:#fff !important;border-left:2px solid #f59e0b}
-  /* ---- BADGE ---- */
+  .best-row td{background:#fefce8 !important}
+
+  .del-btn{background:none;border:none;cursor:pointer;color:#94a3b8;font-size:1rem;padding:2px 6px}
+  .del-btn:hover{color:#ef4444}
+
   .badge{display:inline-block;font-size:0.72rem;font-weight:700;padding:2px 8px;border-radius:20px;margin-left:6px}
   .badge-itm{background:#fee2e2;color:#dc2626}
   .badge-otm{background:#dcfce7;color:#16a34a}
-  /* ---- INTRO ---- */
-  .intro-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;margin-top:16px}
+
+  /* INTRO */
+  .intro-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px;margin-top:16px}
   .info-card{border-radius:10px;padding:16px 18px;border-left:4px solid}
   .info-card.blue{background:#eff6ff;border-color:#2e75b6}
   .info-card.green{background:#f0fdf4;border-color:#4ade80}
   .info-card.amber{background:#fffbeb;border-color:#f59e0b}
   .info-card h3{font-size:0.88rem;font-weight:700;margin-bottom:6px}
   .info-card p{font-size:0.83rem;color:#475569;line-height:1.6}
-  /* ---- WAS TUN ---- */
+
+  /* WAS TUN */
   .scenario-table{width:100%;border-collapse:collapse;margin-top:12px}
   .scenario-table th{background:#1f4e79;color:#fff;padding:9px 12px;font-size:0.82rem;text-align:left}
   .scenario-table td{padding:9px 12px;border-bottom:1px solid #e2e8f0;font-size:0.85rem;vertical-align:top}
   .scenario-table tr:nth-child(even) td{background:#f8fafc}
-  /* ---- FOOTER ---- */
-  footer{text-align:center;padding:16px;font-size:0.78rem;color:#94a3b8;border-top:1px solid #e2e8f0;margin-top:10px}
-  footer a{color:#2e75b6;text-decoration:none}
-  /* ---- TOOLTIP ---- */
-  .tip{font-size:0.78rem;color:#64748b;margin-top:4px;font-style:italic}
-  /* ---- STATUS ---- */
-  .fetch-status{font-size:0.78rem;height:18px;color:#64748b;margin-top:3px}
+
+  /* DATE / TOOLBAR */
+  .date-row{display:flex;align-items:center;gap:16px;margin-bottom:14px;flex-wrap:wrap}
+  .date-row label{font-weight:700;font-size:0.87rem;color:#1f4e79}
+  .date-row input{border:2px solid #2e75b6;border-radius:7px;padding:6px 10px;font-size:0.9rem}
+  .ann-legend{background:#fffbeb;border:1.5px solid #f59e0b;border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:0.84rem;color:#713f12;line-height:1.6}
+  .tbl-toolbar{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;align-items:center}
+  .tbl-toolbar button{border:none;border-radius:7px;padding:7px 16px;cursor:pointer;font-size:0.87rem;font-weight:700}
+  .btn-add{background:#2e75b6;color:#fff}
+  .btn-add:hover{background:#1f4e79}
+  .btn-del{background:#e2e8f0;color:#475569}
+  .btn-del:hover{background:#f87171;color:#fff}
+  .btn-clr{background:#e2e8f0;color:#475569}
+  .btn-clr:hover{background:#fca5a5;color:#7f1d1d}
+
+  .tip{font-size:0.78rem;color:#64748b;font-style:italic}
+  .fetch-status{font-size:0.75rem;color:#64748b;margin-top:2px;height:16px}
   .fetch-status.ok{color:#16a34a}
   .fetch-status.err{color:#dc2626}
-  /* ---- ADD ROW BTN ---- */
-  #add-row-btn{background:#2e75b6;color:#fff;border:none;border-radius:7px;padding:7px 18px;cursor:pointer;font-size:0.88rem;font-weight:700;margin-bottom:12px}
-  #add-row-btn:hover{background:#1f4e79}
-  #del-row-btn{background:#e2e8f0;color:#475569;border:none;border-radius:7px;padding:7px 14px;cursor:pointer;font-size:0.88rem;font-weight:700;margin-bottom:12px;margin-left:6px}
-  #del-row-btn:hover{background:#f87171;color:#fff}
-  /* ---- ANN LEGEND ---- */
-  .ann-legend{background:#fffbeb;border:1.5px solid #f59e0b;border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:0.85rem;color:#713f12;display:flex;align-items:center;gap:8px}
-  .ann-legend strong{font-size:1.1rem}
-  /* ---- DATE ROW ---- */
-  .date-row{display:flex;align-items:center;gap:16px;margin-bottom:14px;flex-wrap:wrap}
-  .date-row label{font-weight:700;font-size:0.85rem;color:#1f4e79}
-  .date-row input{border:2px solid #2e75b6;border-radius:7px;padding:6px 10px;font-size:0.9rem}
+
+  footer{text-align:center;padding:16px;font-size:0.78rem;color:#94a3b8;border-top:1px solid #e2e8f0;margin-top:10px}
+  footer a{color:#2e75b6;text-decoration:none}
+
   @media(max-width:600px){
     .tab-pane{padding:14px 12px}
-    nav.tabs button{padding:10px 12px;font-size:0.82rem}
+    nav.tabs button{padding:10px 10px;font-size:0.8rem}
     header h1{font-size:1.1rem}
   }
 </style>
@@ -119,10 +139,8 @@
 <body>
 
 <header>
-  <div>
-    <h1>📈 Meine Geldseite – Covered Call Rechner</h1>
-    <span class="sub">Berechne ROO, Annualisierte Rendite &amp; Upside-Potenzial für Covered Calls</span>
-  </div>
+  <h1>📈 Meine Geldseite – Covered Call Rechner</h1>
+  <span class="sub">Berechne ROO, Annualisierte Rendite &amp; Upside-Potenzial für Covered Calls</span>
 </header>
 
 <!-- API BANNER -->
@@ -131,17 +149,18 @@
   <input type="text" id="api-key-in" placeholder="Ihr API-Key (z.B. abc123xyz)" autocomplete="off">
   <button id="api-save">Speichern</button>
   <span id="api-status">Kein Key hinterlegt – Live-Kurse nicht verfügbar</span>
+  <span class="reg-link">Noch kein Key? → <a href="https://finnhub.io/register" target="_blank">Kostenlos registrieren auf finnhub.io</a></span>
 </div>
 
 <!-- TABS -->
 <nav class="tabs">
   <button class="active" onclick="showTab('intro',this)">📖 Einführung</button>
   <button onclick="showTab('single',this)">📊 Einzelaktie</button>
-  <button onclick="showTab('multi',this)">🔢 Mehrere Aktien</button>
+  <button onclick="showTab('multi',this)">🔢 Optionen vergleichen</button>
   <button onclick="showTab('action',this)">✅ Was tun?</button>
 </nav>
 
-<!-- ===== TAB: INTRO ===== -->
+<!-- ===== INTRO ===== -->
 <div id="tab-intro" class="tab-pane active">
   <div class="card">
     <h2>Was ist ein Covered Call?</h2>
@@ -151,14 +170,14 @@
       Im Gegenzug begrenzen Sie Ihren möglichen Kursgewinn auf den Basispreis (Strike) der Option.<br><br>
       Dieser Rechner hilft Ihnen, die wichtigsten Kennzahlen zu berechnen:
     </p>
-    <div class="intro-grid" style="margin-top:16px">
+    <div class="intro-grid">
       <div class="info-card blue">
         <h3>📐 ROO – Return on Option</h3>
         <p>Der reine Ertrag der Option, bezogen auf Ihre Investition. Berechnung: Optionsgewinn ÷ Kurs × 100</p>
       </div>
       <div class="info-card green">
         <h3>🔁 Annualisierte Rendite</h3>
-        <p>ROO hochgerechnet auf ein volles Jahr – so vergleichen Sie verschiedene Laufzeiten fair miteinander.</p>
+        <p>ROO hochgerechnet auf ein volles Jahr – so vergleichen Sie Optionen mit verschiedenen Laufzeiten fair.</p>
       </div>
       <div class="info-card amber">
         <h3>📈 Upside-Potenzial</h3>
@@ -170,14 +189,17 @@
       </div>
     </div>
     <div style="margin-top:18px;padding:14px;background:#f0f9ff;border-radius:8px;border-left:4px solid #0ea5e9">
-      <strong>💡 Tipp: Live-Kurse holen</strong><br>
-      <span style="font-size:0.88rem;color:#475569">Tragen Sie oben Ihren kostenlosen <a href="https://finnhub.io" target="_blank" style="color:#2e75b6">Finnhub.io</a>-API-Key ein.
-      Dann können Sie in der Einzelaktie- und Mehrere-Aktien-Ansicht den aktuellen Kurs automatisch abrufen.</span>
+      <strong>💡 Live-Kurse aktivieren:</strong><br>
+      <span style="font-size:0.88rem;color:#475569">
+        Registrieren Sie sich kostenlos auf
+        <a href="https://finnhub.io/register" target="_blank" style="color:#2e75b6;font-weight:700">finnhub.io/register</a>
+        und tragen Sie Ihren API-Key oben ein. Dann können Sie Kurse per Klick abrufen.
+      </span>
     </div>
   </div>
 </div>
 
-<!-- ===== TAB: EINZELAKTIE ===== -->
+<!-- ===== EINZELAKTIE ===== -->
 <div id="tab-single" class="tab-pane">
   <div class="card">
     <h2>📊 Einzelne Aktie analysieren</h2>
@@ -215,7 +237,7 @@
     <div id="s-result" style="display:none;margin-top:18px">
       <div id="s-itm-badge" style="margin-bottom:10px;font-size:0.9rem;font-weight:700"></div>
       <div class="result-grid">
-        <div class="rbox ann" id="r-ann-box">
+        <div class="rbox ann">
           <div class="lbl">🔁 Ann. Rendite (% p.a.)</div>
           <div class="val" id="r-ann">–</div>
         </div>
@@ -252,123 +274,102 @@
   </div>
 </div>
 
-<!-- ===== TAB: MEHRERE AKTIEN ===== -->
+<!-- ===== OPTIONEN VERGLEICHEN ===== -->
 <div id="tab-multi" class="tab-pane">
   <div class="card">
-    <h2>🔢 Mehrere Aktien vergleichen</h2>
+    <h2>🔢 Optionen vergleichen – beliebige Aktien, Strikes &amp; Laufzeiten</h2>
 
-    <!-- DATE ROW -->
+    <div style="background:#eff6ff;border-radius:8px;padding:12px 16px;margin-bottom:14px;border-left:4px solid #2e75b6;font-size:0.88rem;color:#1e3a5f;line-height:1.7">
+      <strong>💡 So nutzen Sie diese Tabelle:</strong><br>
+      Jede Zeile ist eine Option – Sie können <strong>dieselbe Aktie mehrfach eintragen</strong>, z.B. AAPL mit Strike 210, 215 und 220, um die beste Kombination zu finden.
+      Tragen Sie in der Spalte <em>Bezeichnung</em> einen Namen ein, damit Sie die Zeilen unterscheiden können.
+      Die <strong style="color:#b45309">★ Ann. Rendite</strong>-Spalte zeigt die annualisierte Rendite – die beste Zeile wird <span style="background:#fef08a;padding:1px 6px;border-radius:4px">gelb hervorgehoben</span>.
+    </div>
+
+    <div class="ann-legend">
+      ⚠️ Für die Ann. Rendite müssen <strong>Heutiges Datum</strong> (unten), <strong>Kurs</strong>, <strong>Strike</strong>, <strong>Prämie</strong> und <strong>Verfallsdatum</strong> ausgefüllt sein.
+    </div>
+
     <div class="date-row">
       <label>📅 Heutiges Datum:</label>
       <input type="date" id="m-today" oninput="updateMulti()">
-      <span class="tip">Muss gesetzt sein für die annualisierte Rendite</span>
     </div>
 
-    <!-- ANN LEGEND -->
-    <div class="ann-legend">
-      <strong>★</strong>
-      Die <strong>Ann. Rendite (% p.a.)</strong> ist die letzte Spalte rechts und wird <span style="background:#fef08a;padding:1px 6px;border-radius:4px;font-weight:700">gelb hervorgehoben</span> für die beste Option.
-      Dafür müssen Kurs, Prämie, Strike UND das Verfallsdatum ausgefüllt sein.
+    <div class="tbl-toolbar">
+      <button class="btn-add" onclick="addRow()">➕ Zeile hinzufügen</button>
+      <button class="btn-del" onclick="delLastRow()">🗑 Letzte Zeile löschen</button>
+      <button class="btn-clr" onclick="clearAll()">✖ Alle löschen</button>
     </div>
-
-    <button id="add-row-btn" onclick="addRow()">➕ Zeile hinzufügen</button>
-    <button id="del-row-btn" onclick="delRow()">🗑 Letzte Zeile löschen</button>
 
     <div class="tbl-wrap">
       <table class="multi">
         <thead>
           <tr>
-            <th style="width:90px">Ticker</th>
-            <th style="width:50px">Kurs<br>abrufen</th>
+            <th style="width:30px"></th>
+            <th style="width:130px">Bezeichnung<br><span style="font-weight:400;font-size:0.7rem;opacity:0.85">(z.B. „AAPL 215 Jan")</span></th>
+            <th style="width:110px">Ticker<br>+ Kurs abrufen</th>
             <th style="width:80px">Kurs ($)</th>
             <th style="width:80px">Strike ($)</th>
             <th style="width:80px">Prämie ($)</th>
-            <th style="width:110px">Verfallsdatum</th>
+            <th style="width:115px">Verfallsdatum</th>
             <th>Tage</th>
             <th>ROO (%)</th>
             <th>Upside (%)</th>
             <th>Downside (%)</th>
-            <th>Ges.-Rendite (%)</th>
-            <th class="ann-col-hdr">★ Ann. Rendite<br>(% p.a.)</th>
+            <th>Ges. (%)</th>
+            <th class="ann-hdr">★ Ann. Rendite<br>(% p.a.)</th>
           </tr>
         </thead>
-        <tbody id="multi-tbody">
-          <!-- rows added by JS -->
-        </tbody>
+        <tbody id="multi-tbody"></tbody>
       </table>
     </div>
-    <p class="tip" style="margin-top:8px">★ = Beste annualisierte Rendite wird gelb hervorgehoben</p>
+    <p class="tip" style="margin-top:8px">★ Die Zeile mit der höchsten annualisierten Rendite wird automatisch gelb markiert.</p>
   </div>
 </div>
 
-<!-- ===== TAB: WAS TUN ===== -->
+<!-- ===== WAS TUN ===== -->
 <div id="tab-action" class="tab-pane">
   <div class="card">
     <h2>✅ Was tun je nach Situation?</h2>
-    <div class="fg" style="margin-bottom:14px">
-      <div>
-        <label>Aktueller Kurs ($)</label>
-        <input type="number" id="wt-price" placeholder="z.B. 214.50" step="0.01" oninput="calcWasTun()">
-      </div>
-      <div>
-        <label>Strike-Preis ($)</label>
-        <input type="number" id="wt-strike" placeholder="z.B. 215.00" step="0.01" oninput="calcWasTun()">
-      </div>
-      <div>
-        <label>Heutiges Datum</label>
-        <input type="date" id="wt-today" oninput="calcWasTun()">
-      </div>
-      <div>
-        <label>Verfallsdatum</label>
-        <input type="date" id="wt-expiry" oninput="calcWasTun()">
-      </div>
-    </div>
-    <div id="wt-result">
-      <table class="scenario-table">
-        <thead><tr><th>Szenario</th><th>Situation</th><th>Empfehlung</th></tr></thead>
-        <tbody>
-          <tr>
-            <td><strong>📈 Kurs &gt; Strike (ITM)</strong></td>
-            <td>Aktie wurde über den Strike gekauft</td>
-            <td>Option auslaufen lassen → Aktien werden zum Strike verkauft. Neuen Call auf neue Aktien schreiben.</td>
-          </tr>
-          <tr>
-            <td><strong>📉 Kurs &lt; Strike (OTM)</strong></td>
-            <td>Option verfällt wertlos</td>
-            <td>Prämie einstreichen ✅. Neuen Call mit neuem Verfallsdatum schreiben (Roll Out).</td>
-          </tr>
-          <tr>
-            <td><strong>🔄 Kurs fällt stark</strong></td>
-            <td>Aktie unter Einstandskurs</td>
-            <td>Option zurückkaufen (günstig) + neuen Call mit tieferem Strike schreiben. Oder Position halten.</td>
-          </tr>
-          <tr>
-            <td><strong>⏰ Kurz vor Verfall</strong></td>
-            <td>Theta-Zerfall maximal</td>
-            <td>Option jetzt zurückkaufen (fast wertlos) und neuen Call schreiben = "Roll Out"</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-    <div style="margin-top:18px;padding:14px;background:#f0fdf4;border-radius:8px;border-left:4px solid #4ade80">
-      <strong>📐 Ellman-Regel:</strong><br>
-      <span style="font-size:0.88rem;color:#166534">ROO zwischen 2–4% pro Monat gilt als ideal. Annualisierte Rendite von 24–48% ist das Ziel für konservative Covered-Call-Strategien nach Alan Ellman.</span>
-    </div>
+    <table class="scenario-table">
+      <thead><tr><th>Szenario</th><th>Situation</th><th>Empfehlung</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><strong>📈 Kurs &gt; Strike (ITM)</strong></td>
+          <td>Aktie wurde über den Strike getrieben</td>
+          <td>Option auslaufen lassen → Aktien werden zum Strike verkauft. Neuen Call auf neue Aktien schreiben.</td>
+        </tr>
+        <tr>
+          <td><strong>📉 Kurs &lt; Strike (OTM)</strong></td>
+          <td>Option verfällt wertlos</td>
+          <td>Prämie einstreichen ✅. Neuen Call mit neuem Verfallsdatum schreiben (Roll Out).</td>
+        </tr>
+        <tr>
+          <td><strong>🔄 Kurs fällt stark</strong></td>
+          <td>Aktie unter Einstandskurs</td>
+          <td>Option zurückkaufen (günstig) + neuen Call mit tieferem Strike schreiben. Oder Position halten.</td>
+        </tr>
+        <tr>
+          <td><strong>⏰ Kurz vor Verfall</strong></td>
+          <td>Theta-Zerfall maximal</td>
+          <td>Option jetzt zurückkaufen (fast wertlos) und neuen Call schreiben = „Roll Out"</td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 </div>
 
 <footer>
   <a href="https://www.meine-geldseite.de" target="_blank">www.meine-geldseite.de</a> &nbsp;|&nbsp;
-  Kein Anlageersatz – alle Angaben ohne Gewähr. Kursdaten: <a href="https://finnhub.io" target="_blank">Finnhub.io</a>
+  Kein Anlageersatz – alle Angaben ohne Gewähr. &nbsp;|&nbsp;
+  Kursdaten: <a href="https://finnhub.io" target="_blank">Finnhub.io</a> &nbsp;|&nbsp;
+  <a href="https://finnhub.io/register" target="_blank">Kostenlos registrieren</a>
 </footer>
 
 <script>
-// ============================
-// UTILITIES
-// ============================
 const el  = id => document.getElementById(id);
 const num = id => { const v = parseFloat(el(id)?.value); return isNaN(v) ? null : v; };
-const dat = id => { const v = el(id)?.value; return v ? new Date(v) : null; };
+const dat = id => { const v = el(id)?.value; return v ? new Date(v+'T00:00:00') : null; };
 const fp  = v  => v !== null && v !== undefined ? (v*100).toFixed(2)+'%' : '–';
 const fd  = v  => v !== null ? '$'+v.toFixed(2) : '–';
 
@@ -379,37 +380,31 @@ function daysBetween(expiry, today) {
   return Math.ceil(ms / 86400000);
 }
 
-// ============================
-// CORE CALCULATION
-// ============================
 function calcOpt(S, today, K, expiry, P) {
   if (!S || !K || !P) return null;
-  const daysToExp = daysBetween(expiry, today);
-  const cost100   = S * 100;
-  const proceeds  = P * 100;
-  const isITM     = K < S;
-  const intrinsic = Math.max(0, S - K) * 100;
-  const optProfit = proceeds - intrinsic;
-  const upside    = K > S ? (K - S) * 100 : 0;
-  const totProfit = optProfit + upside;
-  const totRet    = cost100 > 0 ? totProfit / cost100 : 0;
-  const roo       = cost100 > 0 ? optProfit / cost100 : 0;
-  const upsidePct = cost100 > 0 ? upside / cost100 : 0;
-  const dowsPct   = cost100 > 0 ? proceeds / cost100 : 0;
+  const daysToExp  = daysBetween(expiry, today);
+  const cost100    = S * 100;
+  const proceeds   = P * 100;
+  const isITM      = K < S;
+  const intrinsic  = Math.max(0, S - K) * 100;
+  const optProfit  = proceeds - intrinsic;
+  const upside     = K > S ? (K - S) * 100 : 0;
+  const totProfit  = optProfit + upside;
+  const totRet     = cost100 > 0 ? totProfit / cost100 : 0;
+  const roo        = cost100 > 0 ? optProfit / cost100 : 0;
+  const upsidePct  = cost100 > 0 ? upside / cost100 : 0;
+  const dowsPct    = cost100 > 0 ? proceeds / cost100 : 0;
   const annualized = (daysToExp && daysToExp > 0) ? totRet * (365 / daysToExp) : null;
   return { daysToExp, cost100, proceeds, isITM, intrinsic, optProfit, upside,
            upsidePct, dowsPct, roo, totProfit, totRet, annualized };
 }
 
-// ============================
-// SINGLE CALC
-// ============================
 function calcSingle() {
   const S = num('s-price'), K = num('s-strike'), P = num('s-prem');
   const today = dat('s-today'), expiry = dat('s-expiry');
   const r = calcOpt(S, today, K, expiry, P);
   if (!r) { el('s-result').style.display='none'; return; }
-  el('s-result').style.display='block';
+  el('s-result').style.display = 'block';
   el('r-ann').textContent      = r.annualized !== null ? fp(r.annualized) : '(Verfallsdatum fehlt)';
   el('r-roo').textContent      = fp(r.roo);
   el('r-tot').textContent      = fp(r.totRet);
@@ -423,15 +418,13 @@ function calcSingle() {
     : '<span class="badge badge-otm">✅ OTM – Aus dem Geld (Kurs unter Strike)</span>';
 }
 
-// ============================
-// MULTI TABLE
-// ============================
 let rowCount = 0;
 const DEMO = [
-  {ticker:'AAPL', price:'214.50', strike:'215.00', prem:'3.20', exp: offsetDate(30)},
-  {ticker:'MSFT', price:'415.20', strike:'420.00', prem:'5.80', exp: offsetDate(28)},
-  {ticker:'KO',   price:'63.10',  strike:'64.00',  prem:'0.85', exp: offsetDate(21)},
-  {ticker:'PG',   price:'172.40', strike:'175.00', prem:'2.10', exp: offsetDate(35)},
+  {label:'AAPL – Strike 210, 21 Tage', ticker:'AAPL', price:'214.50', strike:'210.00', prem:'6.30', exp: offsetDate(21)},
+  {label:'AAPL – Strike 215, 21 Tage', ticker:'AAPL', price:'214.50', strike:'215.00', prem:'3.20', exp: offsetDate(21)},
+  {label:'AAPL – Strike 215, 35 Tage', ticker:'AAPL', price:'214.50', strike:'215.00', prem:'4.80', exp: offsetDate(35)},
+  {label:'MSFT – Strike 420, 28 Tage', ticker:'MSFT', price:'415.20', strike:'420.00', prem:'5.80', exp: offsetDate(28)},
+  {label:'KO – Strike 64, 21 Tage',    ticker:'KO',   price:'63.10',  strike:'64.00',  prem:'0.85', exp: offsetDate(21)},
 ];
 
 function offsetDate(days) {
@@ -447,17 +440,18 @@ function addRow(data) {
   const tr = document.createElement('tr');
   tr.id = `mrow-${id}`;
   tr.innerHTML = `
+    <td class="ctd"><button class="del-btn" onclick="delRow(${id})" title="Zeile löschen">✕</button></td>
+    <td class="lbl-col"><input type="text" id="m${id}-label" placeholder='z.B. AAPL 215 Jan' value="${data?.label||''}" style="width:120px;font-size:0.82rem"></td>
     <td>
-      <div class="fetch-row">
-        <input type="text" id="m${id}-ticker" placeholder="AAPL" style="text-transform:uppercase;width:62px"
-          value="${data?.ticker||''}" oninput="updateMulti()">
-        <button onclick="fetchMulti(${id})" title="Kurs abrufen" style="background:#2e75b6;color:#fff;border:none;border-radius:5px;padding:3px 7px;cursor:pointer;font-size:0.8rem">↓</button>
+      <div class="tk-cell">
+        <input type="text" id="m${id}-ticker" placeholder="AAPL" value="${data?.ticker||''}">
+        <button onclick="fetchMulti(${id})" title="Kurs abrufen">↓ Kurs</button>
       </div>
+      <div style="font-size:0.72rem;color:#64748b;height:14px;margin-top:1px" id="m${id}-fstatus"></div>
     </td>
-    <td class="ctd"><span id="m${id}-fstatus" style="font-size:0.75rem;color:#64748b"></span></td>
-    <td><input type="number" id="m${id}-price"  placeholder="0.00" step="0.01" value="${data?.price||''}" oninput="updateMulti()"></td>
+    <td><input type="number" id="m${id}-price"  placeholder="0.00" step="0.01" value="${data?.price||''}"  oninput="updateMulti()"></td>
     <td><input type="number" id="m${id}-strike" placeholder="0.00" step="0.01" value="${data?.strike||''}" oninput="updateMulti()"></td>
-    <td><input type="number" id="m${id}-prem"   placeholder="0.00" step="0.01" value="${data?.prem||''}" oninput="updateMulti()"></td>
+    <td><input type="number" id="m${id}-prem"   placeholder="0.00" step="0.01" value="${data?.prem||''}"   oninput="updateMulti()"></td>
     <td><input type="date"   id="m${id}-expiry" value="${data?.exp||''}" oninput="updateMulti()"></td>
     <td class="ctd" id="m${id}-days">–</td>
     <td class="ctd" id="m${id}-roo">–</td>
@@ -470,19 +464,28 @@ function addRow(data) {
   updateMulti();
 }
 
-function delRow() {
+function delRow(id) {
+  const tr = el(`mrow-${id}`);
+  if (tr) tr.remove();
+  updateMulti();
+}
+
+function delLastRow() {
   const tbody = el('multi-tbody');
-  if (tbody.children.length > 1) {
-    tbody.removeChild(tbody.lastElementChild);
-    updateMulti();
-  }
+  if (tbody.children.length > 0) tbody.removeChild(tbody.lastElementChild);
+  updateMulti();
+}
+
+function clearAll() {
+  if (!confirm('Alle Zeilen löschen?')) return;
+  el('multi-tbody').innerHTML = '';
+  rowCount = 0;
 }
 
 function updateMulti() {
   const today = dat('m-today');
   const rows  = Array.from(el('multi-tbody').children);
   const results = [];
-
   rows.forEach(tr => {
     const id  = tr.id.replace('mrow-','');
     const S   = num(`m${id}-price`);
@@ -491,29 +494,20 @@ function updateMulti() {
     const exp = dat(`m${id}-expiry`);
     const r   = calcOpt(S, today, K, exp, P);
     results.push({ id, r });
-
     const set = (field, val) => { const c = el(`m${id}-${field}`); if(c) c.textContent = val; };
-
     if (r) {
       set('days', r.daysToExp !== null ? r.daysToExp : '–');
       set('roo',  fp(r.roo));
       set('up',   fp(r.upsidePct));
       set('dows', fp(r.dowsPct));
       set('tot',  fp(r.totRet));
-      // ANNUALIZED
-      if (r.annualized !== null) {
-        set('ann', fp(r.annualized));
-      } else {
-        set('ann', today ? '(Datum fehlt)' : '(Datum setzen)');
-      }
+      set('ann',  r.annualized !== null ? fp(r.annualized) : (today ? '(Datum fehlt)' : '(Datum setzen)'));
     } else {
-      set('days','–'); set('roo','–'); set('up','–'); set('dows','–'); set('tot','–');
+      ['days','roo','up','dows','tot'].forEach(f => set(f,'–'));
       set('ann', today ? '–' : '(Datum setzen)');
     }
     tr.classList.remove('best-row');
   });
-
-  // Highlight best annualized
   const valid = results.filter(x => x.r && x.r.annualized !== null);
   if (valid.length > 0) {
     const best = valid.reduce((a,b) => a.r.annualized > b.r.annualized ? a : b);
@@ -522,58 +516,49 @@ function updateMulti() {
   }
 }
 
-// ============================
-// FETCH LIVE PRICE
-// ============================
-function getApiKey() {
-  return localStorage.getItem('mgs_apikey') || '';
-}
+function getApiKey() { return localStorage.getItem('mgs_apikey') || ''; }
 
 async function fetchPrice(tickerId, priceId, statusId) {
   const key = getApiKey();
   if (!key) { el(statusId).textContent='❌ Kein API-Key gespeichert'; el(statusId).className='fetch-status err'; return; }
   const sym = el(tickerId).value.trim().toUpperCase();
-  if (!sym) { el(statusId).textContent='❌ Bitte Ticker eingeben'; el(statusId).className='fetch-status err'; return; }
+  if (!sym)  { el(statusId).textContent='❌ Bitte Ticker eingeben'; el(statusId).className='fetch-status err'; return; }
   el(statusId).textContent='⏳ Abruf…'; el(statusId).className='fetch-status';
   try {
-    const url = `https://finnhub.io/api/v1/quote?symbol=${sym}&token=${key}`;
-    const res = await fetch(url);
+    const res = await fetch(`https://finnhub.io/api/v1/quote?symbol=${sym}&token=${key}`);
     const d   = await res.json();
     if (!d.c || d.c === 0) throw new Error('Kurs nicht gefunden');
     el(priceId).value = d.c.toFixed(2);
     el(statusId).textContent = `✅ ${sym}: $${d.c.toFixed(2)}`;
     el(statusId).className = 'fetch-status ok';
-    if (tickerId.startsWith('s-')) calcSingle();
-    else updateMulti();
+    calcSingle();
   } catch(e) {
-    el(statusId).textContent = '❌ Fehler: '+e.message;
+    el(statusId).textContent = '❌ '+e.message;
     el(statusId).className = 'fetch-status err';
   }
 }
 
 async function fetchMulti(id) {
   const key = getApiKey();
-  const sym = el(`m${id}-ticker`).value.trim().toUpperCase();
+  const sym = el(`m${id}-ticker`)?.value.trim().toUpperCase();
   const statusEl = el(`m${id}-fstatus`);
-  if (!key) { statusEl.textContent='No Key'; return; }
-  if (!sym) { statusEl.textContent='?'; return; }
-  statusEl.textContent='…';
+  if (!key) { statusEl.textContent='Kein Key'; return; }
+  if (!sym) { statusEl.textContent='Ticker?'; return; }
+  statusEl.textContent = '⏳';
   try {
-    const url = `https://finnhub.io/api/v1/quote?symbol=${sym}&token=${key}`;
-    const res = await fetch(url);
+    const res = await fetch(`https://finnhub.io/api/v1/quote?symbol=${sym}&token=${key}`);
     const d   = await res.json();
     if (!d.c || d.c === 0) throw new Error('n/a');
     el(`m${id}-price`).value = d.c.toFixed(2);
-    statusEl.textContent = '✅';
+    statusEl.textContent = `✅ $${d.c.toFixed(2)}`;
+    statusEl.style.color = '#16a34a';
     updateMulti();
   } catch(e) {
     statusEl.textContent = '❌';
+    statusEl.style.color = '#dc2626';
   }
 }
 
-// ============================
-// API KEY UI
-// ============================
 function loadApiKey() {
   const k = getApiKey();
   if (k) {
@@ -591,9 +576,6 @@ el('api-save').addEventListener('click', () => {
   el('api-status').textContent = '✅ API-Key gespeichert – Live-Kurse verfügbar';
 });
 
-// ============================
-// TAB SWITCHING
-// ============================
 function showTab(name, btn) {
   document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('nav.tabs button').forEach(b => b.classList.remove('active'));
@@ -601,18 +583,11 @@ function showTab(name, btn) {
   btn.classList.add('active');
 }
 
-// ============================
-// INIT
-// ============================
 window.addEventListener('DOMContentLoaded', () => {
   loadApiKey();
-  // Set today's date in all date fields
   const todayStr = new Date().toISOString().slice(0,10);
-  el('s-today').value  = todayStr;
-  el('wt-today').value = todayStr;
-  el('m-today').value  = todayStr;   // <-- CRITICAL: auto-set for multi tab
-
-  // Load demo rows
+  el('s-today').value = todayStr;
+  el('m-today').value = todayStr;
   DEMO.forEach(d => addRow(d));
 });
 </script>
